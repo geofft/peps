@@ -220,7 +220,7 @@ something like
 
     If you wish to install a non-Debian packaged Python application, it
     may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you.
+    virtual environment for you. Make sure you have pipx installed.
 
     See https://wiki.debian.org/Python/venv for more information.
 
