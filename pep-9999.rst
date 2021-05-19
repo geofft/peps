@@ -277,7 +277,8 @@ reason otherwise.
 Rejected alternatives
 =====================
 
-Put the file in sys.path - wrong place (--user)
+Put the file in ``sys.path`` - wouldn't have the desired behaviour for
+``--user`` installs.
 
 Put the file in ``sysconfig`` itself - hard to configure
 
