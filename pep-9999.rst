@@ -145,18 +145,18 @@ this _might_ not be true of old versions of virtualenv. pip supports 3.6+, check
 
 --system-site-packages
 
-have a matrix of behavior for these use cases, current + future
+Have a matrix of behavior for these use cases, current + future
 
 use case 1: Python configured without Felipe's patch - without option to support another site directory
 - can you pip install? yes => yes
 - can you delete things shipped by the OS? yes => yes
-use case 2: Debian, attempt systemwide pip install
+use case 2: Debian, attempt system-wide pip install
 - yes => no
 - yes => no
 use case 3: Debian, attempt pip install in virtualenv
 - yes => yes
 - irrelevant
-use case 4: Debian, attempt systemwide pip install in Docker container
+use case 4: Debian, attempt system-wide pip install in Docker container
 - yes => yes
 - no (because of the Debian patch, unless you sudo pip install -U pip) => no --- is this harmless???
   - in the future, => yes via ``pip install --scheme=posix_distro`` or
