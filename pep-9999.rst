@@ -35,7 +35,7 @@ purposes: as a software package to be used in its own right by end
 users, and as an implementation language for other software in the
 distribution.
 
-For example, many distributions ship a /usr/bin/python3 command which is
+For example, many distributions ship a ``/usr/bin/python3`` command which is
 both the ``python3`` command available to end users as well as the
 ``#!/usr/bin/python3`` shebang for Python-language software. Because
 there are no official binary releases of Python for Linux/UNIX, almost
@@ -124,11 +124,11 @@ Rationale
 
 - We want Docker containers to keep working, even though it's not great
 
-PYTHONHOME overrides stdlib and site-packages
+``PYTHONHOME`` overrides stdlib and site-packages
 venv does not override stdlib is easy to detect
 we should therefore always ignore it in a venv
 
-pyvenv.cfg mechanism - sys.base_prefix == sys.prefix
+``pyvenv.cfg`` mechanism - ``sys.base_prefix == sys.prefix``
 this _might_ not be true of old versions of virtualenv. pip supports 3.6+, check what's supported
 
     # pip calls get_default_scheme()
@@ -164,7 +164,7 @@ use case 4: Debian, attempt systemwide pip install in Docker container
 use case 5: geofft building a Python for users, wants them not to run pip.
 - yes => no
 - yes => no
-use case 6: Fedora running pip inside an RPM build, checking for "$RPMBUILD"
+use case 6: Fedora running pip inside an RPM build, checking for ``$RPMBUILD``
 - yes => ... yes I think? presumably the build chroot would d have some way to suppress
     this file during package build if you're going to install packages via
     pip
@@ -278,11 +278,11 @@ Rejected alternatives
 
 Put the file in sys.path - wrong place (--user)
 
-Put the file in sysconfig itself - hard to configure
+Put the file in ``sysconfig`` itself - hard to configure
 
-- Should not be in etc because linuxbrew etc.
+- Should not be in ``/etc`` because linuxbrew etc.
 
-should not be pip.conf because not pip-specific
+Should not be in ``pip.conf`` because it is not pip-specific.
 File could be TOML
 File could be a script
 
@@ -291,10 +291,10 @@ Don't allow shadowing - UX complexity
 Allow distro software to run without the site-installed packages - this
 is a good idea, but outside the scope of this PEP
 
-We should get sys.is_virtual_env and sysconfig.is_externally_managed
+We should get ``sys.is_virtual_env`` and ``sysconfig.is_externally_managed``
 into the stdlib
 
-Why not use INSTALLER (PEP-0627)?
+Why not use ``INSTALLER`` (PEP-0627)?
 - It's in the dist-info directory, so it doesn't tell us about
   environment/shadowing
 - It's informational: "specified to be used for informational purposes
