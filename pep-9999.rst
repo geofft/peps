@@ -290,8 +290,9 @@ File could be a script
 
 Don't allow shadowing - UX complexity
 
-Allow distro software to run without the site-installed packages - this
-is a good idea, but outside the scope of this PEP
+Allow distro software to run without the site-installed packages (a
+"system python" vs "user python") - this is a good idea, but outside the
+scope of this PEP
 
 We should get ``sys.is_virtual_env`` and ``sysconfig.is_externally_managed``
 into the stdlib
