@@ -63,7 +63,7 @@ There is a worse problem with system-wide installs: if you attempt to
 recover from this situation with ``sudo pip uninstall``, you may end up
 removing packages that are shipped by the system's package manager. In
 fact, this can even happen if you simply upgrade a package - pip will
-try to remove the old verson of the package, as shipped by the OS. At
+try to remove the old version of the package, as shipped by the OS. At
 this point it may not be possible to recover the system to a consistent
 state using just the software remaining on the system.
 
@@ -110,8 +110,8 @@ self-compiled interpreter, or with a distribution that does not mark its
 interpreter in this way, will work as it always has worked.
 
 Second, it sets the rule that when installing packages to an
-interpreter's global context (either to an unmarked intepreter, or if
-overriding the markng), Python-specific package managers should
+interpreter's global context (either to an unmarked interpreter, or if
+overriding the marking), Python-specific package managers should
 delete files only within the directories of the ``sysconfig`` scheme in
 which they would create files. This permits a distributor of a Python
 interpreter to set up two directories, one for its own managed packages, and
@@ -186,7 +186,7 @@ by whether ``sys.prefix == sys.base_prefix``.
 2. Is there a ``EXTERNALLY-MANAGED`` file in the directory identified by
 ``sysconfig.get_path("stdlib", sysconfig.get_default_scheme())``
 
-If both of these condtions are true, the installer should exit with an
+If both of these conditions are true, the installer should exit with an
 error message indicating that package installation into this Python
 interpreter's directory are disabled outside of a virtual environment.
 
@@ -195,7 +195,7 @@ such as a command-line flag ``--break-system-packages``.
 
 If the ``EXTERNALLY-MANAGED`` file parses as an ``email.message`` , the
 installer should output an error message from that file as part of its
-error. If the header variable ``Error-XY`` where ``XY`` is the currrent
+error. If the header variable ``Error-XY`` where ``XY`` is the current
 locale's language code exists, then it should use the value of that
 header as the error; otherwise, it should use the body of the message as
 the error. If the file does not parse as an ``email.message`, then the
@@ -267,7 +267,7 @@ reason otherwise.
   not come back if someone does the equivalent of a ``RUN apt-get
   dist-upgrade``
 - in the error message, recommend pipx for applications, for now - it
-  will create a virtualenv for you, it does the righ thing out of the
+  will create a virtualenv for you, it does the right thing out of the
   box for applications
 - set up two paths, one for distro, one for pip - configure the default
   one to be the one suitable for pip
