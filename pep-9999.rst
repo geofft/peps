@@ -496,7 +496,7 @@ Usually, a Python package installer installs to directories
 in a scheme returned by the ``sysconfig`` standard library
 package.  Ordinarily, this is the scheme returned by
 ``sysconfig.get_default_scheme()``, but based on
-configuration (e.g.  ``pip install --user``), it may use a
+configuration (e.g. ``pip install --user``), it may use a
 different scheme.
 
 Whenever the installer is installing to a ``sysconfig``
@@ -791,7 +791,7 @@ non-virtual-environment installs in any Python installation,
 but that is outside the scope of this PEP.)
 
 Should the file be TOML? TOML is gaining popularity for
-packaging (see e.g.  PEP-517) but does not yet have an
+packaging (see e.g. PEP-517) but does not yet have an
 implementation in the standard library. Strictly speaking,
 this isn't a blocker - distributions need only write the
 file, not read it, so they don't need a TOML library (the
