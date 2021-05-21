@@ -401,7 +401,7 @@ although it applies equivalently to any other tool.
      yes; after this PEP yes, because there is no marker
      file.
 
-   * Can it delete externally-installed pavkages? Currently
+   * Can it delete externally-installed packages? Currently
      yes; after this PEP yes, because the distribution's
      changes to ``sysconfig`` won't be visible, and there
      will only be one shared scheme.
@@ -684,8 +684,8 @@ of ``virtualenv``; as of this writing, pip supports Python
 15.1.0 onwards, so this scenario is possible. In older
 versions of ``virtualenv``, the mechanism is instead to set
 a new attribute, ``sys.real_prefix``, and it does not use
-the stnadard library supportfor virtual environments,
-so``sys.base_prefix`` is the same as ``sys.prefix``. So the
+the standard library support for virtual environments,
+so ``sys.base_prefix`` is the same as ``sys.prefix``. So the
 logic for robustly detecting a virtual environment is
 something like::
 
@@ -697,7 +697,7 @@ Security Implications
 
 The purpose of this feature is not to implement a security
 boundary; it is to discouraged well-intentioned changes from
-unexpectedly breaking a user's envoronment. That is to say,
+unexpectedly breaking a user's environment. That is to say,
 the reason this PEP restricts ``pip install`` outside a
 virtual environment is not that it's a security risk to be
 able to do so; it's that "There should be one-- and
@@ -772,7 +772,7 @@ to have no advantage over the current scheme.)
 Should the marker just be a new attribute of a ``sysconfig``
 scheme?  There is some conceptual cleanliness to this,
 except that it's hard to override. We want to make it easy
-for container images, pacage build environments, etc. to
+for container images, package build environments, etc. to
 suppress the marker file. A file that you can remove is
 easy; code in ``sysconfig`` is much harder to modify.
 
@@ -810,7 +810,7 @@ Apart from the concerns above about having the file in
 committing to too powerful of an API and risks making
 behavior harder to understand. (Note that the
 ``get_default_scheme`` hook of bpo-43976 is in fact
-executable, but that code needs to be supplied whe the
+executable, but that code needs to be supplied when the
 interpreter builds; it isn't intended to be supplied
 post-build.)
 
@@ -862,7 +862,7 @@ System Python
 
 Shouldn't distribution software just run with the
 distribution ``site-packages`` directory alone on
-``sys.path`` and ignore the local system administator's
+``sys.path`` and ignore the local system administrator's
 ``site-packages`` as well as the user-specific one? This is
 a good idea, and various versions of it have been
 circulating for a while under the name of "system Python" or
@@ -956,7 +956,7 @@ by bpo-43976, except implemented as a code patch to
 The implementation of ``is_virtual_environment`` above, as
 well as the logic to load the ``EXTERNALLY-MANAGED`` file
 and find the error message from it, may as well get added to
-the standard libary (``sys`` and ``sysconfig``,
+the standard library (``sys`` and ``sysconfig``,
 respectively), to centralize their implementations, but they
 don't need to be added yet.
 
