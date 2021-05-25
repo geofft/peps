@@ -564,9 +564,8 @@ a specific reason otherwise.
   ``pip install --user --break-system-packages pipx`` to
   _avoid_ breaking system packages.  Consider arranging
   things so your distribution's package / environment for
-  Python when used directly (e.g., ``python3`` on Fedora or
-  ``python3-full`` on Debian) depends on pipx in addition to
-  pip.
+  Python for end users (e.g., ``python3`` on Fedora or
+  ``python3-full`` on Debian) depends on pipx.
 
 .. _pipx: https://github.com/pipxproject/pipx
 
