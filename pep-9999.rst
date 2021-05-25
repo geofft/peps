@@ -54,12 +54,11 @@ the distribution. If the new package is not
 backwards-compatible, it may break software shipped by the
 distribution.
 
-This problem is particularly extreme because many
+This problem is particularly extreme because some
 distributions have package-management tools that are
-themselves written in Python. It's possible to
-unintentionally break Fedora's ``dnf`` command or Ubuntu's
-Software Center with a ``pip install`` command, making it
-hard to recover.
+themselves written in Python. For example, it's possible to
+unintentionally break Fedora's ``dnf`` command with a ``pip
+install`` command, making it hard to recover.
 
 This applies both to system-wide installs (``sudo pip
 install``) as well as user home directory installs (``pip
@@ -141,9 +140,14 @@ overwrite) files owned by the external package manager.
 Rationale
 =========
 
-For the first behavior change, the marker file is specified
+As described in detail in the next section, the first
+behavior change involves creating a marker file named
+``EXTERNALLY-MANAGED``, whose presence indicates that
+non-virtual-environment package installations are managed by
+some means external to Python, such as a distribution's
+package manager. This file is specified
 to live in the ``stdlib`` directory in the default
-``sysconfig`` scheme. This marks the interpreter /
+``sysconfig`` scheme, which marks the interpreter /
 installation as a whole, not a particular location on
 ``sys.path``. The reason for this is that, as identified
 above, there are two related problems that risk breaking an
@@ -171,7 +175,8 @@ Python-specific installer tool like ``pip install`` by
 default, and if you do run such a tool, should it be willing
 to delete packages shipped by the external package manager?
 For simplicity, this section refers to pip's behavior,
-although it applies equivalently to any other tool.
+although it applies equivalently to any other
+Python-specific package management tool.
 
 1. A standard unpatched CPython, without any special
    configuration of or patches to ``sysconfig`` and without
@@ -214,8 +219,8 @@ although it applies equivalently to any other tool.
      suspect this is because the user has previously run
      ``sudo pip install --upgrade pip`` and therefore now
      has a version of ``/usr/bin/pip`` without the Debian
-     patch; standardizing this behavior would address this
-     problem.)
+     patch; standardizing this behavior in upstream package
+     installers would address this problem.)
 
 3. A distribution Python when used inside a virtual environment.
 
@@ -265,7 +270,14 @@ although it applies equivalently to any other tool.
 
    * Can it delete externally-installed packages? Currently
      yes; after this PEP no. This is a behavior change which
-     we don't propose a way to override. However, pip can
+     we don't propose a way to override. However, since the
+     base image is generally minimal, there shouldn't be
+     much of a use case for simply uninstalling packages
+     (especially without using the distribution's own
+     tools). The common case is when pip wants to upgrade a
+     package, which previously would have deleted the old
+     version (except on Debian). After this change, the old
+     version will still be on disk, but pip will
      still _shadow_ externally-installed packages, and we
      believe this to be sufficient for this not to be a
      breaking change in practice - a Python ``import``
@@ -432,7 +444,9 @@ disabled outside of a virtual environment.
 
 The installer should have a way for the user to override
 these rules, such as a command-line flag
-``--break-system-packages``.
+``--break-system-packages``. This option should not be
+enabled by default and should carry some connotation that
+its use is risky.
 
 The ``EXTERNALLY-MANAGED`` file is a metadata file in the
 `packaging core metadata format`_, which is an
@@ -658,6 +672,20 @@ a specific reason otherwise.
 
   The best approach here depends a lot on your
   distribution's conventions and mechanisms for packaging.
+
+* Similarly, the ``sysconfig`` paths that are not for
+  importable Python code - that is, ``include``,
+  ``platinclude``, ``scripts``, and ``data`` - should also
+  have two variants, one for use by distribution-packaged
+  software and one for use for locally-installed software,
+  and the distribution should be set up such that both are
+  usable. For instance, a typical FHS-compliant distribution
+  will use ``/usr/local/include`` for the default scheme's
+  ``include`` and ``/usr/include`` for distribution-packaged
+  headers and place both on the compiler's search path, and
+  it will use ``/usr/local/bin`` for the default scheme's
+  ``scripts`` and ``/usr/bin`` for distribution-packaged
+  entry points and place both on ``$PATH``.
 
 Backwards Compatibility
 =======================
