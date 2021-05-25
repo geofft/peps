@@ -35,27 +35,29 @@ distributions (by which we mean Linux and other OS
 distributions as well as overlay distributions like Homebrew
 and MacPorts) generally ship Python for two purposes: as a
 software package to be used in its own right by end users,
-and as an implementation language for other software in the
+and as a language dependency for other software in the
 distribution.
 
 For example, many distributions ship a ``/usr/bin/python3``
-command which is both the ``python3`` command available to
+binary or script, which provides the ``python3`` command available to
 end users as well as the ``#!/usr/bin/python3`` shebang for
-Python-language software. Because there are no official
+Python-language software included in the distribution. Because there are no official
 binary releases of Python for Linux/UNIX, almost all Python
 end users on these OSes use the Python interpreter built and
 shipped with their distribution.
 
-These are typically the same command, which means that if an
+The `python3` executable available to the users of the distribution 
+and the `python3` executable available as a dependency for other 
+software in the distribution are typically the same binary. This means that if an
 end user installs a Python package using a tool like ``pip``
-outside the context of a virtual environment, the new
+outside the context of a virtual environment, that
 package is visible to Python-language software shipped by
 the distribution. If the new package is not
 backwards-compatible, it may break software shipped by the
 distribution.
 
-This problem is particularly extreme because some
-distributions have package-management tools that are
+This may pose a critical problem for the integrity of distributions,
+which often have package-management tools that are
 themselves written in Python. For example, it's possible to
 unintentionally break Fedora's ``dnf`` command with a ``pip
 install`` command, making it hard to recover.
@@ -100,7 +102,7 @@ importable by the software in their base system.
 
 While this continues to carry the risk of installing a newer
 version of a dependency than the operating system expects or
-otherwise negatively changing the behavior of an
+otherwise negatively affecting the behavior of an
 application, it does not need to carry the risk of removing
 files from the operating system. A tool like pip should be
 able to install packages in some directory on the default
@@ -157,7 +159,7 @@ install``), and you can install one locally, but in a
 location that is loaded by the standard Python command
 (e.g., with ``pip install --user``). If the marker file were
 in the system-wide ``site-packages`` directory, it would not
-clearly apply to the second case. The `Rejected Ideas`_
+clearly apply to the second case. The `Alternatives`_
 section has further discussion of possible locations.
 
 The second behavior change takes advantage of the existing
@@ -424,7 +426,7 @@ Specification
 Marking an interpreter as using an external package manager
 -----------------------------------------------------------
 
-Before a Python package installer (that is, a tool such as
+Before a Python-specific package installer (that is, a tool such as
 pip - not an external tool such as apt) installs a package
 into a certain Python context, it should make the following
 checks by default:
@@ -763,10 +765,10 @@ Therefore, there is generally no need to filter out terminal
 escape sequences or other potentially-malicious content in
 the error message.
 
-Rejected Ideas
+Alternatives
 ==============
 
-There are a number of similar-sounding proposals that this
+There are a number of similar proposals we considered that this
 PEP rejects or defers, largely to preserve the behavior in
 the case-by-case analysis in Rationale_.
 
