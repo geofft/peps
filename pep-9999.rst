@@ -434,10 +434,14 @@ The installer should have a way for the user to override
 these rules, such as a command-line flag
 ``--break-system-packages``.
 
-If the contents of the ``EXTERNALLY-MANAGED`` file parses as
-an ``email.message.EmailMessage`` using the routines in
-``email.parser``, the installer should output an error
-message from that file as part of its error. If
+The ``EXTERNALLY-MANAGED`` file is a metadata file in the
+`packaging core metadata format`_, which is an
+email-message-like format with headers and a body.  (At
+current writing, that format is defined exactly as what the
+standard library ``email.parser`` module can parse using
+``policy=email.policy.compat32``.) If the file can be parsed
+as a core metadata file, then the installer should output an
+error message from that file as part of its error. If
 ``locale.getlocale(locale.LC_MESSAGES)`` returns
 non-``None`` and the first element is a string of the form
 ``xx_YY``, and the file contains a header variable
@@ -446,7 +450,9 @@ installer should use the value of that header as the error.
 Otherwise, it should use the body of the message as an
 error.
 
-If the file does not parse as an ``EmailMessage``, then the
+.. _`packaging core metadata format`: https://packaging.python.org/specifications/core-metadata/
+
+If the file does not parse as a core metadata file, then the
 installer should ignore the parse failure and instead just
 use a pre-defined error message of its own, which should
 suggest that the user create a virtual environment to
