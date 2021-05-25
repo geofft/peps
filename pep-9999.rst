@@ -600,12 +600,12 @@ a specific reason otherwise.
   distribution-installed packages. Fedora uses
   ``/usr/local/lib/python3.x/site-packages`` vs.
   ``/usr/lib/python3.x/site-packages``. (Debian uses
-  ``/usr/local/lib/python3.x/dist-packages`` vs.
-  ``/usr/lib/python3.x/dist-packages`` as an additional
+  ``/usr/local/lib/python3/dist-packages`` vs.
+  ``/usr/lib/python3/dist-packages`` as an additional
   layer of separation from a locally-compiled Python
   interpreter: if you build and install upstream CPython in
   ``/usr/local/bin``, it will look at
-  ``/usr/local/lib/python3.x/site-packages``, and Debian
+  ``/usr/local/lib/python3/site-packages``, and Debian
   wishes to make sure that packages installed via
   the locally-built interpreter don't show up on
   ``sys.path`` for the distribution interpreter.)
@@ -728,7 +728,7 @@ Security Implications
 =====================
 
 The purpose of this feature is not to implement a security
-boundary; it is to discouraged well-intentioned changes from
+boundary; it is to discourage well-intentioned changes from
 unexpectedly breaking a user's environment. That is to say,
 the reason this PEP restricts ``pip install`` outside a
 virtual environment is not that it's a security risk to be
@@ -749,7 +749,7 @@ scenario.
 
 For those reasons, an attempted install with a marker file
 present is not a security incident, and there is no need to
-raise an auditing event for it. If the calling users
+raise an auditing event for it. If the calling user
 legitimately has access to ``sudo pip install`` or ``pip
 install --user``, they can accomplish the same installation
 entirely outside of Python; if they do not legitimately have
