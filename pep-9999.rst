@@ -585,7 +585,7 @@ a specific reason otherwise.
   locally-installed packages and ``/usr`` for
   distribution-installed packages. Fedora uses
   ``/usr/local/lib/python3.x/site-packages`` vs.
-  ``/usr/lib/python3.x/site-packages``. Debian uses
+  ``/usr/lib/python3.x/site-packages``. (Debian uses
   ``/usr/local/lib/python3.x/dist-packages`` vs.
   ``/usr/lib/python3.x/dist-packages`` as an additional
   layer of separation from a locally-compiled Python
@@ -593,9 +593,8 @@ a specific reason otherwise.
   ``/usr/local/bin``, it will look at
   ``/usr/local/lib/python3.x/site-packages``, and Debian
   wishes to make sure that packages installed via
-  ``/usr/local/bin/pip`` for the locally-built interpreter
-  don't interfere with packages installed via
-  ``/usr/bin/pip`` for the distribution interpreter.
+  the locally-built interpreter don't show up on
+``sys.path`` for the distribution interpreter.)
 
   Note that the ``/usr/local`` vs. ``/usr`` split is
   analogous to how the ``PATH`` environment variable
