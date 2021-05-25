@@ -608,7 +608,7 @@ a specific reason otherwise.
   ``/usr/local/lib/python3.x/site-packages``, and Debian
   wishes to make sure that packages installed via
   the locally-built interpreter don't show up on
-``sys.path`` for the distribution interpreter.)
+  ``sys.path`` for the distribution interpreter.)
 
   Note that the ``/usr/local`` vs. ``/usr`` split is
   analogous to how the ``PATH`` environment variable
