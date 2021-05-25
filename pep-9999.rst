@@ -868,18 +868,20 @@ Shouldn't distribution software just run with the
 distribution ``site-packages`` directory alone on
 ``sys.path`` and ignore the local system administrator's
 ``site-packages`` as well as the user-specific one? This is
-a good idea, and various versions of it have been
+a worthwhile idea, and various versions of it have been
 circulating for a while under the name of "system Python" or
-"platform Python" (versus "user Python"). However, it's much
-more involved of a change. First, it would be a
-backwards-incompatible change. As mentioned in the
-Motivation_ section, there are valid use cases for running
-distribution-installed Python applications like Sphinx or
-Ansible with locally-installed Python libraries available on
-their ``sys.path``. A wholesale switch to ignoring local
-packages would break these use cases, and a distribution
-would have to make a case-by-case analysis of whether an
-application ought to see locally-installed libraries or not.
+"platform Python" (with a separate "user Python" for end
+users writing Python or installing Python software separate
+from the system). However, it's much more involved of a
+change. First, it would be a backwards-incompatible change.
+As mentioned in the Motivation_ section, there are valid use
+cases for running distribution-installed Python applications
+like Sphinx or Ansible with locally-installed Python
+libraries available on their ``sys.path``. A wholesale
+switch to ignoring local packages would break these use
+cases, and a distribution would have to make a case-by-case
+analysis of whether an application ought to see
+locally-installed libraries or not.
 
 Furthermore, `Fedora attempted this change and reverted
 it`_, finding, ironically, that their implementation of the
@@ -891,24 +893,39 @@ and a PEP recommending it would be premature.
 .. _`Fedora attempted this change and reverted it`: https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/thread/SEFUWW4XZBTVOAQ36XOJQ72PIICMFOSN/
 .. _`broke their package manager`: https://bugzilla.redhat.com/show_bug.cgi?id=1483342
 
-We continue to think the "system Python" approach is the
-right long-term goal, but it needs more design work and
-testing before it's ready for general use, and so it's
-outside the scope of this PEP. The goal of this PEP is to
-make a targeted change that reduces (but does not eliminate)
-the risk of breaking system software while minimizing (but
-not completely avoiding) breaking changes, and, in the
-process, to guide the user community towards expanded use of
-virtual environments. Our hope is that the changes in this
-PEP, especially the recommendation of separate directories
-for distribution and local modules, make it easier to
-implement "system Python" in the future.
+This PEP is intended to be a complete and self-contained
+change that is independent of a distributor's decision for
+or against "system Python" or similar proposals. It is not
+incompatible with a distribution implementing "system
+Python" in the future, and even though both proposals
+address the same class of problems, there are still
+arguments in favor of implementing something like "system
+Python" even after implementing this PEP. At the same time,
+though, this PEP specifically tries to make a more targeted
+and minimal change, such that it can be implemented by
+distributors who don't expect to adopt "system Python" (or
+don't expect to implement it immediately). The changes in
+this PEP stand on their own merits and are not an
+intermediate step for some future proposal. This PEP reduces
+(but does not eliminate) the risk of breaking system
+software while minimizing (but not completely avoiding)
+breaking changes, which should therefore be much easier to
+implement than the full "system Python" idea, which comes
+with the downsides mentioned above.
 
-In particular, if distributions wish to experiment with
-shipping particular Python applications with a modified
-entry point script to avoid having locally-installed
-software on ``sys.path``, such experimentation is certainly
-compatible with this PEP.
+We expect that the guidance in this PEP - that users should
+use virtual environments whenever possible and that
+distributions should have separate ``sys.path`` directories
+for distribution-managed and locally-managed modules -
+should make further experiments easier in the future. These
+may include distributing wholly separate "system" and "user"
+Python interpreters, running system software out of a
+distribution-owned virtual environment or ``PYTHONHOME``
+(but shipping a single interpreter), or modifying the entry
+points for certain software (such as the distribution's
+package manager) to use a ``sys.path`` that only sees
+distribution-managed directories. Those ideas themselves,
+however, remain outside the scope of this PEP.
 
 Implementation Notes
 ====================
