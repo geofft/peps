@@ -463,17 +463,26 @@ Python-specific package management tool.
      for Conda to change these, because if pip removes a
      package, it doesn't inform Conda of that.
 
-7. A build of Python as part of an integrated monorepo with
-   its own dependency tooling, such as a private monorepo at
-   a software development company or an integrated package
-   manager like Nixpkgs_.  In these cases, the authors of
-   the monorepo may want to encourage use of the monorepo's
-   own mechanisms for importing Python packages, for the
-   same reasons as a software distribution would. They may
-   also have custom instructions for how to properly set up
-   a virtual environment.
+7. A build of Python as part of a specific type of
+   distribution where direct users of Python or other
+   languages in the distribution are expected or encouraged
+   to make changes to the distribution itself if they wish
+   to add libraries. Common examples include private
+   "monorepos" at software development companies, where the
+   users are software engineers and a single repository
+   builds both third-party and in-house software.
+   User-level package managers like Nixpkgs_ may also count,
+   because they encourage users of Nix who are Python
+   developers to `package their software for Nix`__.  In
+   these cases, the distribution may want to provide
+   guidance encouraging use of the distribution's own
+   facilities for adding new package, along with a link to
+   documentation. They may also have custom instructions for
+   how to properly set up a virtual environment.
 
    .. _Nixpkgs: https://github.com/NixOS/nixpkgs
+
+   .. __: https://nixos.wiki/wiki/Python
 
    * Can you ``pip install`` without an override? Currently
      yes (at least ``pip install --user``); after this PEP
@@ -757,8 +766,7 @@ to how the ``PATH`` environment variable typically includes
 installs to ``/usr/local`` by default. This split is
 `recommended by the `Filesystem Hierarchy Standard`__.
 
-.. __:
-https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html
+.. __: https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html
 
 There are two ways you could do this. One is, if you are
 building and packaging Python libraries directly (e.g., your
