@@ -1,6 +1,13 @@
 PEP: 9999
 Title: Graceful cooperation between external and Python package managers
-Author: Geoffrey Thomas <geofft@ldpreload.com>, Matthias Klose <doko@ubuntu.com>, Filipe Laíns <lains@riseup.net>, Donald Stufft <donald@python.org>, Tzu-Ping Chung <uranusjr@gmail.com>, Stefano Rivera <stefanor@debian.org>, Elana Hashman <ehashman@debian.org>, Pradyun Gedam <mail@pradyunsg.me>
+Author: Geoffrey Thomas <geofft@ldpreload.com>,
+        Matthias Klose <doko@ubuntu.com>,
+        Filipe Laíns <lains@riseup.net>,
+        Donald Stufft <donald@python.org>,
+        Tzu-Ping Chung <uranusjr@gmail.com>,
+        Stefano Rivera <stefanor@debian.org>,
+        Elana Hashman <ehashman@debian.org>,
+        Pradyun Gedam <mail@pradyunsg.me>
 Discussions-To: TODO discourse
 Status: Draft
 Type: Informational
@@ -51,10 +58,12 @@ software package to be used in its own right by end users,
 and as a language dependency for other software in the
 distribution.
 
-For example, many distributions ship a ``/usr/bin/python3``
-binary or script, which provides the ``python3`` command available to
-end users as well as the ``#!/usr/bin/python3`` shebang for
-Python-language software included in the distribution. Because there are no official
+For example, Fedora and Debian (and their downstream
+distributions, as well as many others) ship a
+``/usr/bin/python3`` binary which provides the ``python3``
+command available to end users as well as the
+``#!/usr/bin/python3`` shebang for Python-language software
+included in the distribution. Because there are no official
 binary releases of Python for Linux/UNIX, almost all Python
 end users on these OSes use the Python interpreter built and
 shipped with their distribution.
