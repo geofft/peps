@@ -75,7 +75,7 @@ distribution
     ``setuptools.dist.Distribution`` or "sdist".
 
     The provider of a distribution - the team or company
-    that collects and publish the software and makes any
+    that collects and publishes the software and makes any
     needed modifications - is its **distributor**.
 package
     A unit of software that can be installed and used within
@@ -246,7 +246,7 @@ Second, it sets the rule that when installing packages to an
 interpreter's global context (either to an unmarked
 interpreter, or if overriding the marking),
 **Python-specific package managers should modify or delete
-files only within the directories of the ``sysconfig``
+files only within the directories of the sysconfig
 scheme in which they would create files**. This permits a
 distributor of a Python interpreter to set up two
 directories, one for its own managed packages, and one for
@@ -308,7 +308,7 @@ Python-specific package management tool.
 
    * Can it delete externally-installed packages? Because
      this is an unpatched, locally installed CPython not
-     shpped through a distribution, there isn't really a
+     shipped through a distribution, there isn't really a
      concept of "externally-installed" packages in this use
      case; none of the ``sysconfig`` schemes of this
      interpreter should overlap any distribution-installed
@@ -385,7 +385,7 @@ Python-specific package management tool.
    container, and the impact is lower, since you can rebuild
    the container and you don't have to struggle to recover a
    running machine. There are also a large number of
-   existing ``Dockerfile``s with an unqualified ``RUN pip
+   existing Dockerfiles with an unqualified ``RUN pip
    install ...`` statement, etc., and it would be good not
    to break those.  So, builders of base container images
    may want to ensure that the marker file is not present,
@@ -873,7 +873,7 @@ Security Implications
 =====================
 
 The purpose of this feature is not to implement a security
-boundary; it is to discourage well-intentioned changes from
+boundary; it is to discourage well-intended changes from
 unexpectedly breaking a user's environment. That is to say,
 the reason this PEP restricts ``pip install`` outside a
 virtual environment is not that it's a security risk to be
