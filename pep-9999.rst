@@ -289,94 +289,139 @@ Use cases
 ---------
 
 The changed behavior in this PEP is intended to "do the
-right thing" for as many use cases as possible. For the
-following representative use cases, we analyze the two
-behaviors that could be changed by this PEP: can you run a
-Python-specific installer tool like ``pip install`` by
-default, and if you do run such a tool, should it be willing
-to delete packages shipped by the external package manager?
-For simplicity, this section refers to pip's behavior,
-although it applies equivalently to any other
-Python-specific package management tool.
+right thing" for as many use cases as possible.  In this
+section, we consider the changes specified by this PEP for
+several representative use cases / contexts. Specfically, we
+ask about the two behaviors that could be changed by this
+PEP:
+
+1. Will a Python-specific installer tool like ``pip
+   install`` permit installations by default, after
+   implementation of this PEP?
+
+2. If you do run such a tool, should it be willing to delete
+   packages shipped by the external (non-Python-specific)
+   package manager for that context, such as a distribution
+   package manager?
+
+(For simplicity, this section discusses pip as the
+Python-specific installer tool, though the analysis should
+apply equally to any other Python-specific package
+management tool.)
+
+This table summarizes the use cases discussed in detail
+below:
+
+==== ================================= =========================== ===================================================
+Case Description                       ``pip install`` permitted   Deleting externally-installed packages permitted
+==== ================================= =========================== ===================================================
+1    Unpatched CPython                 Currently yes; stays yes    Currently yes; stays yes
+2    Distribution ``/usr/bin/python3`` Currently yes; becomes no   Currently yes (except on Debian); becomes no
+                                       (assuming a distribution
+                                       adds a marker file)
+3    Distribution Python in venv       Currently yes; stays yes    There are no externally-installed packages
+4    Distribution Python in venv       Currently yes; stays yes    Currently no; stays no
+     with ``--system-site-packages``
+5    Distribution Python in Docker     Currently yes; stays yes    Currently yes; becomes no
+                                       (assuming the Docker image
+                                       removes the marker file)
+6    Conda environment                 Currently yes; stays yes    Currently yes; stays yes
+7    Dev-facing distribution           Currently yes; becomes no   Currently often yes; becomes no
+                                       (assuming they add a        (assuming they configure ``sysconfig`` as needed)
+                                       marker file)
+8    Distribution building packages    Currently yes; can stay yes Currently yes; becomes no
+9    ``PYTHONHOME`` copied from        Currently yes; becomes no   Curretly yes; becomes no
+     a distribution Python stdlib
+10   ``PYTHONHOME`` copied from        Currently yes; stays yes    Currently yes; stays yes
+     upstream Python stdlib
+==== ================================= =========================== ===================================================
+
+In more detail, the use cases above are:
 
 1. A standard unpatched CPython, without any special
    configuration of or patches to ``sysconfig`` and without
-   a marker file. The behavior does not change:
+   a marker file. This PEP does not change its behavior.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes.
+   Such a CPython should (regardless of this PEP) not be
+   installed in a way that that overlaps any
+   distribution-installed Python on the same system. For
+   instance, on an OS that ships Python in ``/usr/bin``, you
+   should not install a custom CPython built with
+   ``./configure --prefix=/usr``, or it will overwrite some
+   files from the distribution and the distribution will
+   eventually overwrite some files from your installation.
+   Instead, your installation should be in a separate
+   directory (perhaps ``/usr/local``, ``/opt``, or your home
+   directory).
 
-   * Can it delete externally-installed packages? Because
-     this is an unpatched, locally installed CPython not
-     shipped through a distribution, there isn't really a
-     concept of "externally-installed" packages in this use
-     case; none of the ``sysconfig`` schemes of this
-     interpreter should overlap any distribution-installed
-     Python you may have on the same system. Still,
-     technically, if you had some non-Python-specific
-     mechanism for installing packages into the directories
-     used by this interpreter, currently yes, ``pip
-     install`` would be willing to delete them, and after
-     this PEP also yes.
+   Therefore, we can assume that such a CPython has its own
+   ``stdlib`` directory and its own ``sysconfig`` schemes
+   that do not overlap any distribution-installed Python. So
+   any OS-installe packages are not visible or relevant
+   here.
 
-2. A distribution's ``/usr/bin/python3``, when running ``pip
-   install`` as root or ``pip install --user``.
+   If there is a concept of "externally-installed" packages
+   in this case, it's something outside the OS and generally
+   managed by whoever built and installed this CPython.
+   Because the installer chose not to add a marker file or
+   modify ``sysconfig`` schemes, they're choosing the
+   current behavior, and ``pip install`` can remove any
+   packages available in this CPython.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP no, because we expect distributions
-     to ship a marker file.
+2. A distribution's ``/usr/bin/python3``, either when
+   running ``pip install`` as root or ``pip install
+   --user``, following our `Recommendations for
+   distributions`_.
 
-   * Can it delete externally-installed packages? Currently
-     yes; after this PEP no, because we expect distributions
-     to use a different ``sysconfig`` scheme for their own
-     packages than the default one that ``pip`` uses. Many
-     distributions are already doing so.
+   These recommendations include shipping a marker file in
+   the ``stdlib`` directory, to prevent ``pip install`` by
+   default, and placing distribution-shipped packages in a
+   location other than the default ``sysconfig`` scheme, so
+   that ``pip`` as root does not write to that location.
 
-     Note that on Debian and derivatives, the answer is
-     currently no, because Debian carries a `patch to pip to
-     prevent this`__. So, for those distributions, this PEP
-     is not a behavior change; it simply standardizes that
-     behavior in a way that is no longer Debian-specific and
-     can be included into upstream pip.
+   Many distributions (including Debian, Fedora, and their
+   derivatives) are already doing the latter.
 
-     .. __: https://sources.debian.org/src/python-pip/20.3.4-2/debian/patches/hands-off-system-packages.patch/
+   On Debian and derivatives, ``pip install`` does not
+   currently delete distribution-installed packages, because
+   Debian carries a `patch to pip to prevent this`__. So,
+   for those distributions, this PEP is not a behavior
+   change; it simply standardizes that behavior in a way
+   that is no longer Debian-specific and can be included
+   into upstream pip.
 
-     (We have seen user reports of externally-installed
-     packages being deleted on Debian or a derivative. We
-     suspect this is because the user has previously run
-     ``sudo pip install --upgrade pip`` and therefore now
-     has a version of ``/usr/bin/pip`` without the Debian
-     patch; standardizing this behavior in upstream package
-     installers would address this problem.)
+   .. __: https://sources.debian.org/src/python-pip/20.3.4-2/debian/patches/hands-off-system-packages.patch/
 
-3. A distribution Python when used inside a virtual environment.
+   (We have seen user reports of externally-installed
+   packages being deleted on Debian or a derivative. We
+   suspect this is because the user has previously run
+   ``sudo pip install --upgrade pip`` and therefore now has
+   a version of ``/usr/bin/pip`` without the Debian patch;
+   standardizing this behavior in upstream package
+   installers would address this problem.)
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes, because it specifically
-     exempts virtual environments.
+3. A distribution Python when used inside a virtual
+   environment (either from ``venv`` or ``virtualenv``).
 
-   * Can it delete externally-installed packages? There are
-     no externally-installed packages in a virtual
-     environment, so this question is irrelevant - all
-     packages in the environment can be deleted. Even when
-     ``pip``, ``setuptools``, etc. are installed into the
-     environment, they are and should be locally-managed;
-     they are not system-managed.
+   Inside a virtual environment, all packages are owned by
+   that environment.  Even when ``pip``, ``setuptools``,
+   etc. are installed into the environment, they are and
+   should be managed by tools specific to that environment;
+   they are not system-managed.
 
 4. A distribution Python when used inside a virtual
    environment with ``--system-site-packages``. This is like
    the previous case, but worth calling out explicitly,
    because anything on the global ``sys.path`` is visible.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes.
-
-   * Can it delete externally-installed packages? Currently
-     no, because pip has a special case for running in a
-     virtual environment and deleting packages outside it.
-     After this PEP, still no, in a more general way,
-     because system site packages will be outside any of the
-     ``sysconfig`` schemes for the environment.
+   Currently, the answer to "Will ``pip` delete
+   externally-installed packages`` is no, because pip has a
+   special case for running in a virtual environment and
+   attempting to delete packages outside it. After this PEP,
+   the answer remains no, but the reasoning becmoes more
+   general: system site packages will be outside any of the
+   ``sysconfig`` schemes used for package management in the
+   environment.
 
 5. A distribution Python when used in a single-application
    container image (e.g., a Docker container). In this use
@@ -389,172 +434,141 @@ Python-specific package management tool.
    install ...`` statement, etc., and it would be good not
    to break those.  So, builders of base container images
    may want to ensure that the marker file is not present,
-   even if the underlying OS ships one by default. In such a
-   case:
+   even if the underlying OS ships one by default.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes.
+   There is a small behavior change: currently, ``pip`` run
+   as root will delete externally-installed packages, but
+   after this PEP it will not. We don't propose a way to
+   override this. However, since the base image is generally
+   minimal, there shouldn't be much of a use case for simply
+   uninstalling packages (especially without using the
+   distribution's own tools). The common case is when pip
+   wants to upgrade a package, which previously would have
+   deleted the old version (except on Debian). After this
+   change, the old version will still be on disk, but pip
+   will still _shadow_ externally-installed packages, and we
+   believe this to be sufficient for this not to be a
+   breaking change in practice - a Python ``import``
+   statement will still get you the newly-installed package.
 
-   * Can it delete externally-installed packages? Currently
-     yes; after this PEP no. This is a behavior change which
-     we don't propose a way to override. However, since the
-     base image is generally minimal, there shouldn't be
-     much of a use case for simply uninstalling packages
-     (especially without using the distribution's own
-     tools). The common case is when pip wants to upgrade a
-     package, which previously would have deleted the old
-     version (except on Debian). After this change, the old
-     version will still be on disk, but pip will
-     still _shadow_ externally-installed packages, and we
-     believe this to be sufficient for this not to be a
-     breaking change in practice - a Python ``import``
-     statement will still get you the newly-installed
-     package.
-
-     If it becomes necessary to have a way to do this, we
-     suggest that the distribution should document a way for
-     the installer tool to access the ``sysconfig`` scheme
-     used by the distribution itself.  See the
-     `Recommendations for distributions`_ section for more
-     discussion.
+   If it becomes necessary to have a way to do this, we
+   suggest that the distribution should document a way for
+   the installer tool to access the ``sysconfig`` scheme
+   used by the distribution itself.  See the
+   `Recommendations for distributions`_ section for more
+   discussion.
 
    It is the view of the authors of this PEP that it's still
-   a good idea to use virtual environments even in
-   single-application container images. For instance, the
-   example from `Docker's Python image`_ would be better
-   implemented as::
+   a good idea to use virtual environments with
+   distribution-installed Python interpereters, even in
+   single-application container images. Even though they run
+   a single _application_, that application may run commands
+   from the OS that are implemented in Python, and if you've
+   installed or upgraded the distribution-shipped Python
+   packages using Python-specific tools, those commands may
+   break.
 
-       FROM python:3
-       WORKDIR /usr/src/app
-       RUN python3 -m venv venv
-       RUN venv/bin/pip install -U pip
-       COPY requirements.txt ./
-       RUN venv/bin/pip install --no-cache-dir -r requirements.txt
-       COPY . .
-       CMD ["venv/bin/python", "./your-daemon-or-script.py"]
-
-   .. _`Docker's Python image`: https://hub.docker.com/_/python
-
-   This ensures that if you call out to OS-provided software
-   in your code, write a downstream ``Dockerfile`` that
-   applies OS upgrades, etc., any packages you've installed
-   cannot impact the OS.
-
-6. A Conda environment, where a non-``conda`` tool like pip
-   is being used to remove packages. In this context, Conda
-   acts as the external package manager and pip as the
-   Python-specific one. This is currently supported by Conda
-   as a way to install software not available in the Conda
-   repositories.
+6. Conda specifically supports the use of non-``conda``
+   tools like pip to install software not available in the
+   Conda repositories. In this context, Conda acts as the
+   external package manager / distribution and pip as the
+   Python-specific one.
 
    In some sense, this is similar to the first case, since
    Conda provides its own installation of the Python
    interpreter.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes, since Conda would not want to
-     add the marker to prevent pip from running.
+   We don't believe this PEP requires any changes to Conda,
+   and versions of pip that have implemented the changes in
+   this PEP will continue to behave as they currently do
+   inside Conda environments. (That said, it may be worth
+   considering whether to use separate ``sysconfig`` schemes
+   for pip-installed and Conda-installed software, for the
+   same reasons it's a good idea for other distributions.)
 
-   * Can it delete externally-installed packages? Currently
-     yes; after this PEP yes, unless Conda changes their
-     ``sysconfig`` schemes to use separate ones for
-     pip-installed and Conda-installed software.  Currently
-     those are the same scheme, but it may be a good idea
-     for Conda to change these, because if pip removes a
-     package, it doesn't inform Conda of that.
-
-7. A build of Python as part of a specific type of
-   distribution where direct users of Python or other
-   languages in the distribution are expected or encouraged
-   to make changes to the distribution itself if they wish
-   to add libraries. Common examples include private
-   "monorepos" at software development companies, where the
-   users are software engineers and a single repository
-   builds both third-party and in-house software.
-   User-level package managers like Nixpkgs_ may also count,
+7. By a "developer-facing distribution," we mean a specific
+   type of distribution where direct users of Python or
+   other languages in the distribution are expected or
+   encouraged to make changes to the distribution itself if
+   they wish to add libraries. Common examples include
+   private "monorepos" at software development companies,
+   where a single repository builds both third-party and
+   in-house software, and the direct users of the
+   distribution's Python interpreter are generally software
+   developers writing said in-house software. User-level
+   package managers like Nixpkgs_ may also count,
    because they encourage users of Nix who are Python
-   developers to `package their software for Nix`__.  In
-   these cases, the distribution may want to provide
-   guidance encouraging use of the distribution's own
-   facilities for adding new package, along with a link to
-   documentation. They may also have custom instructions for
-   how to properly set up a virtual environment.
+   developers to `package their software for Nix`__.
+
+   In these cases, the distribution may want to respond to
+   an attempted ``pip install`` with guidance encouraging
+   use of the distribution's own facilities for adding new
+   packages, along with a link to documentation.
+
+   If the distribution supports/encourages creating a
+   virtual environment from the distribution's Python
+   interpreter, there may also be custom instructions for
+   how to properly set up a virtual environment (as for
+   example Nixpkgs does).
 
    .. _Nixpkgs: https://github.com/NixOS/nixpkgs
 
    .. __: https://nixos.wiki/wiki/Python
 
-   * Can you ``pip install`` without an override? Currently
-     yes (at least ``pip install --user``); after this PEP
-     no, because they would include a marker file.
+8. When building distribution Python packages for a
+   distribution Python (case 2), it may be useful to have
+   ``pip install`` be usable as part of the distribution's
+   packae build process. (Consider, for instance, building a
+   ``python-xyz`` RPM by using ``pip install .`` inside an
+   sdist / source tarball for ``xyz``.) The distribution may
+   also want to use a more targeted but still
+   Python-specific installation tool such as installer_.
 
-   * Can it delete externally-installed packages? Currently
-     possibly yes, depending on the details of how the
-     distribution finds dependencies and whether it's writable;
-     after this PEP no, because they would configure their
-     default ``sysconfig`` schemes to point at a
-     non-writable location.
+   .. _installer: https://installer.rtfd.io/
 
-8. A distribution Python, used in the specific context of
-   building a distribution package containing a Python
-   package - e.g., building a ``python-xyz`` RPM by using
-   ``pip install xyz`` inside the RPM spec file.
+   For this case, the build process will need to find some
+   way to suppress the marker file to allow ``pip install``
+   to work, and will probably need to point the
+   Python-specific tool at the distribution's ``sysconfig``
+   scheme instead of the shipped default. See the
+   `Recommendations for distributions`_ section for more
+   discussion on how to implement this.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP, the build environment would need
-     to find some way to suppress the marker file to allow
-     ``pip install`` to work, but yes, provided it does
-     that.
-
-     See the `Recommendations for distributions`_ section
-     for more discussion on how to implement this.
-
-   * Can it delete externally-installed packages? Currently
-     yes (assuming the distribution doesn't have an
-     equivalent to the Debian patch mentioned earlier);
-     after this PEP no. This change is fine because a
-     package build process should not (and generally cannot)
-     include instructions to delete some other files on the
-     system; it can only package up its own files.
+   As a result of this PEP, pip will no longer be able to
+   remove packages already on the system. However, this
+   behavior change is fine because a package build process
+   should not (and generally cannot) include instructions to
+   delete some other files on the system; it can only
+   package up its own files.
 
 9. A distribution Python used with ``PYTHONHOME`` to set up
    an alternative Python environment (as opposed to a
-   virtual environment).
+   virtual environment), where ``PYTHONHOME`` is set to some
+   directory copied directly from the distribution Python
+   (e.g., ``cp -a /usr/lib/python3.x pyhome/lib``).
 
-   If the ``PYTHONHOME`` is copied directly from the
-   distribution Python (e.g., ``cp -a /usr/lib/python3.x
-   pyhome/lib``), with no modifications, then the behavior
-   is just like a distribution Python (case 2):
+   Assuming there are no modifications, then the behavior is
+   just like the underlying distribution Python (case 2).
+   So there are behavior changes - you can no longer ``pip
+   install`` by default, and if you override it, it will no
+   longer delete externally-installed packages (i.e.,
+   Python packages that were copied from the OS and live in
+   the OS-managed ``sys.path`` entry).
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP no, because you will have copied
-     the marker file.
-
-   * Can it delete externally-installed packages? Currently
-     yes; after this PEP no, assuming the distribution used
-     separate ``sysconfig`` schemes.
-
-   This is a behavior change, but it seems to be defensible,
-   in that if your ``PYTHONHOME`` is a straight copy of the
+   This behavior change seems to be defensible, in that if
+   your ``PYTHONHOME`` is a straight copy of the
    distribution's Python, it should behave like the
    distribution's Python.
 
-   If the ``PYTHONHOME`` is separate from the distribution,
-   such as a copy of the standard library from an unmodified
-   upstream Python (but used with a compatible interpreter
-   from the distribution), then the behavior is just like an
-   unmodified upstream Python (case 1) and does not change:
+10. A distribution Python (or any Python interpreter) used
+    with a ``PYTHONHME`` taken from a compatible unmodified
+    upstream Python.
 
-   * Can you ``pip install`` without an override? Currently
-     yes; after this PEP yes, because there is no marker
-     file.
-
-   * Can it delete externally-installed packages (assuming
-     there is some well-defined concept of
-     "externally-installed packages" in this context)?
-     Currently yes; after this PEP yes, because the
-     distribution's changes to ``sysconfig`` won't be
-     visible, and there will only be one shared scheme.
+    Because the behavior changes in this PEP are keyed off
+    of files in the standard library (the marker file in
+    ``stdlib`` and the behavior of the ``sysconfig``
+    module), the behavior is just like an unmodified
+    upstream CPython (case 1).
 
 Specification
 =============
