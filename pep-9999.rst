@@ -490,7 +490,7 @@ Python-specific package management tool.
 
    * Can it delete externally-installed packages? Currently
      possibly yes, depending on the details of how the
-     monorepo finds dependencies and whether it's writable;
+     distribution finds dependencies and whether it's writable;
      after this PEP no, because they would configure their
      default ``sysconfig`` schemes to point at a
      non-writable location.
