@@ -1059,12 +1059,6 @@ MR to Debian Python to create the EXTERNALLY-MANAGED file
 
 PR to upstream Python for is_virtual_env/is_externally_managed maybe?
 
-TODO
-====
-
-Contact Conda, Poetry, Flit (takluyver), Homebrew/Linuxbrew,
-pfmoore, python-maint@redhat.com
-
 Copyright
 =========
 
