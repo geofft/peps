@@ -160,8 +160,8 @@ binary releases of Python for Linux/UNIX, almost all Python
 end users on these OSes use the Python interpreter built and
 shipped with their distribution.
 
-The `python3` executable available to the users of the distribution 
-and the `python3` executable available as a dependency for other 
+The ``python3`` executable available to the users of the distribution
+and the ``python3`` executable available as a dependency for other
 software in the distribution are typically the same binary. This means that if an
 end user installs a Python package using a tool like ``pip``
 outside the context of a virtual environment, that
@@ -764,7 +764,7 @@ Note that the ``/usr/local`` vs. ``/usr`` split is analogous
 to how the ``PATH`` environment variable typically includes
 ``/usr/local/bin:/usr/bin`` and non-distribution software
 installs to ``/usr/local`` by default. This split is
-`recommended by the `Filesystem Hierarchy Standard`__.
+`recommended by the Filesystem Hierarchy Standard`__.
 
 .. __: https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html
 
@@ -1000,7 +1000,7 @@ experience complexity. There are legitimate use cases for
 shadowing system packages, and an additional command-line
 option to permit it would be more confusing. Meanwhile, not
 passing that option wouldn't eliminate the risk of breaking
-system software, which may be relying on a `try: import xyz`
+system software, which may be relying on a ``try: import xyz``
 failing, finding a limited set of entry points, etc.
 Communicating this distinction seems difficult. We think
 it's a good idea for Python-specific package managers to print a
