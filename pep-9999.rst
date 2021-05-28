@@ -291,7 +291,7 @@ Use cases
 The changed behavior in this PEP is intended to "do the
 right thing" for as many use cases as possible.  In this
 section, we consider the changes specified by this PEP for
-several representative use cases / contexts. Specfically, we
+several representative use cases / contexts. Specifically, we
 ask about the two behaviors that could be changed by this
 PEP:
 
@@ -330,7 +330,7 @@ Case Description                       ``pip install`` permitted   Deleting exte
                                        (assuming they add a        (assuming they configure ``sysconfig`` as needed)
                                        marker file)
 8    Distribution building packages    Currently yes; can stay yes Currently yes; becomes no
-9    ``PYTHONHOME`` copied from        Currently yes; becomes no   Curretly yes; becomes no
+9    ``PYTHONHOME`` copied from        Currently yes; becomes no   Currently yes; becomes no
      a distribution Python stdlib
 10   ``PYTHONHOME`` copied from        Currently yes; stays yes    Currently yes; stays yes
      upstream Python stdlib
@@ -357,7 +357,7 @@ In more detail, the use cases above are:
    Therefore, we can assume that such a CPython has its own
    ``stdlib`` directory and its own ``sysconfig`` schemes
    that do not overlap any distribution-installed Python. So
-   any OS-installe packages are not visible or relevant
+   any OS-installed packages are not visible or relevant
    here.
 
    If there is a concept of "externally-installed" packages
@@ -418,7 +418,7 @@ In more detail, the use cases above are:
    externally-installed packages`` is no, because pip has a
    special case for running in a virtual environment and
    attempting to delete packages outside it. After this PEP,
-   the answer remains no, but the reasoning becmoes more
+   the answer remains no, but the reasoning becomes more
    general: system site packages will be outside any of the
    ``sysconfig`` schemes used for package management in the
    environment.
@@ -460,7 +460,7 @@ In more detail, the use cases above are:
 
    It is the view of the authors of this PEP that it's still
    a good idea to use virtual environments with
-   distribution-installed Python interpereters, even in
+   distribution-installed Python interpreters, even in
    single-application container images. Even though they run
    a single _application_, that application may run commands
    from the OS that are implemented in Python, and if you've
@@ -518,7 +518,7 @@ In more detail, the use cases above are:
 8. When building distribution Python packages for a
    distribution Python (case 2), it may be useful to have
    ``pip install`` be usable as part of the distribution's
-   packae build process. (Consider, for instance, building a
+   package build process. (Consider, for instance, building a
    ``python-xyz`` RPM by using ``pip install .`` inside an
    sdist / source tarball for ``xyz``.) The distribution may
    also want to use a more targeted but still
