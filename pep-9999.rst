@@ -317,7 +317,7 @@ Case Description                       ``pip install`` permitted   Deleting exte
 ==== ================================= =========================== ===================================================
 1    Unpatched CPython                 Currently yes; stays yes    Currently yes; stays yes
 2    Distribution ``/usr/bin/python3`` Currently yes; becomes no   Currently yes (except on Debian); becomes no
-                                       (assuming a distribution
+                                       (assuming the distribution
                                        adds a marker file)
 3    Distribution Python in venv       Currently yes; stays yes    There are no externally-installed packages
 4    Distribution Python in venv       Currently yes; stays yes    Currently no; stays no
