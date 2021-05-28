@@ -727,7 +727,7 @@ distribution's package / environment for Python for end
 users (e.g., ``python3`` on Fedora or ``python3-full`` on
 Debian) depends on pipx.
 
-.. _pipx: https://github.com/pipxproject/pipx
+.. _pipx: https://github.com/pypa/pipx
 
 Remove the marker file in container images
 ------------------------------------------
