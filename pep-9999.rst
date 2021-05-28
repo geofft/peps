@@ -446,7 +446,7 @@ In more detail, the use cases above are:
    wants to upgrade a package, which previously would have
    deleted the old version (except on Debian). After this
    change, the old version will still be on disk, but pip
-   will still _shadow_ externally-installed packages, and we
+   will still *shadow* externally-installed packages, and we
    believe this to be sufficient for this not to be a
    breaking change in practice - a Python ``import``
    statement will still get you the newly-installed package.
@@ -462,7 +462,7 @@ In more detail, the use cases above are:
    a good idea to use virtual environments with
    distribution-installed Python interpreters, even in
    single-application container images. Even though they run
-   a single _application_, that application may run commands
+   a single *application*, that application may run commands
    from the OS that are implemented in Python, and if you've
    installed or upgraded the distribution-shipped Python
    packages using Python-specific tools, those commands may
@@ -721,7 +721,7 @@ end users who want to install some Python-language software
 (which isn't available in the distribution) but are not
 themselves Python users. Packaging pipx in the distribution
 avoids the irony of instructing users to ``pip install
---user --break-system-packages pipx`` to _avoid_ breaking
+--user --break-system-packages pipx`` to *avoid* breaking
 system packages. Consider arranging things so your
 distribution's package / environment for Python for end
 users (e.g., ``python3`` on Fedora or ``python3-full`` on
@@ -899,7 +899,7 @@ is almost always the wrong way to do it.
 
 If there is a case where a user should not be able to ``sudo
 pip install`` or ``pip install --user`` and add files to
-``sys.path`` _for security reasons_, that needs to be
+``sys.path`` *for security reasons*, that needs to be
 implemented either via access control rules on what files
 the user can write to or an explicitly secured ``sys.path``
 for the program in question. Neither of the mechanisms in
@@ -944,9 +944,9 @@ installations into either
 ``~/.local/lib/python3.x/site-packages``, both of which are
 on ``sys.path`` for ``/usr/bin/python3``. In other words,
 the marker file should not be interpreted as marking a
-single _directory_ as externally managed (even though it
+single *directory* as externally managed (even though it
 happens to be in a directory on ``sys.path``); it marks the
-entire _Python installation_ as externally managed.
+entire *Python installation* as externally managed.
 
 Another variant of the above: should the marker file be in
 ``sys.path``, where if it can be found in any directory in
@@ -976,7 +976,7 @@ Should the configuration setting be in ``pip.conf`` or
 ``distutils.cfg``? Apart from the above objections about
 marking an installation, this mechanism isn't specific to
 either of those tools.  (It seems reasonable for pip to
-_also_ implement a configuration flag for users to prevent
+*also* implement a configuration flag for users to prevent
 themselves from performing accidental
 non-virtual-environment installs in any Python installation,
 but that is outside the scope of this PEP.)
@@ -1045,7 +1045,7 @@ related to the purposes of this PEP). If you need it, it's
 simple enough to ``pip uninstall pip`` inside that
 environment, which should discourage at least unintentional
 changes to the environment (and this specification makes no
-provision to disable _intentional_ changes, since after all
+provision to disable *intentional* changes, since after all
 the marker file can be easily removed).
 
 System Python
@@ -1181,7 +1181,7 @@ PR to pip for hands-off-system-packages.patch v2
 
 MR to Debian Python to create the EXTERNALLY-MANAGED file
 
-PR to upstream Python for is_virtual_env/is_externally_managed maybe?
+PR to upstream Python for ``is_virtual_env``/``is_externally_managed`` maybe?
 
 Copyright
 =========
