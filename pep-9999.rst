@@ -100,25 +100,27 @@ package
 Python-specific package manager
     A tool for installing, upgrading, and/or removing Python
     packages in a manner that conforms to Python packaging
-    standards (such as PEP 376 and PEP 427). The most
-    popular Python-specific package manager is pip; other
-    examples include the old Easy Install command as well
-    as direct usage of a distutils ``setup.py`` command.
+    standards (such as PEP 376 [#PEP-376]_ and PEP 427
+    [#PEP-427]_). The most popular Python-specific package
+    manager is pip [#pip]_; other examples include the old
+    Easy Install command [#easy-install]_ as well as direct
+    usage of a ``setup.py`` command.
 
-    (Conda is a bit of a special case, as the ``conda``
-    command can install much more than just Python packages,
-    making it more like a distribution package manager in
-    some senses. Since the ``conda`` command generally only
-    operates on Conda-created environments, most of the
-    concerns in this document do not apply to ``conda``
-    when acting as a Python-specific package manager.)
+    (Conda [#conda]_ is a bit of a special case, as the
+    ``conda`` command can install much more than just Python
+    packages, making it more like a distribution package
+    manager in some senses. Since the ``conda`` command
+    generally only operates on Conda-created environments,
+    most of the concerns in this document do not apply to
+    ``conda`` when acting as a Python-specific package
+    manager.)
 distribution package manager
     A tool for installing, upgrading, and/or removing a
     distribution's packages in an installed instance of that
     distribution, which is capable of installing Python
     packages as well as non-Python packages, and therefore
     generally has its own database of installed software
-    unrelated to PEP 376. Examples include ``apt``,
+    unrelated to PEP 376 [#PEP-376]. Examples include ``apt``,
     ``dpkg``, ``dnf``, ``rpm``, ``pacman``, and ``brew``.
     The salient feature is that if a package was installed
     by a distribution package manager, removing or upgrading
@@ -561,7 +563,7 @@ In more detail, the use cases above are:
    distribution's Python.
 
 10. A distribution Python (or any Python interpreter) used
-    with a ``PYTHONHME`` taken from a compatible unmodified
+    with a ``PYTHONHOME`` taken from a compatible unmodified
     upstream Python.
 
     Because the behavior changes in this PEP are keyed off
@@ -792,12 +794,14 @@ on ``sys.path``.
 The other is to arrange for the default ``sysconfig`` scheme
 to change when running inside a package build versus when
 running on an installed system. The ``sysconfig``
-customization hooks from bpo-43976 should make this easy:
+customization hooks from bpo-43976_ should make this easy:
 make your packaging tool set an environment variable or some
 other detectable configuration, and define a
 ``get_preferred_schemes`` function to return a different
 scheme when called from inside a package build. Then you can
 use ``pip install`` as part of your distribution packaging.
+
+.. _bpo-43976: https://bugs.python.org/issue43976
 
 We propose adding a ``--scheme=...`` option to instruct pip
 to run against a specific scheme. (See `Implementation
@@ -1000,7 +1004,7 @@ Apart from the concerns above about having the file in
 ``sys.path``, we have a concern that making it executable is
 committing to too powerful of an API and risks making
 behavior harder to understand. (Note that the
-``get_default_scheme`` hook of bpo-43976 is in fact
+``get_default_scheme`` hook of bpo-43976_ is in fact
 executable, but that code needs to be supplied when the
 interpreter builds; it isn't intended to be supplied
 post-build.)
@@ -1156,7 +1160,7 @@ Fedora currently carries a `patch to change the default
 install location when not running inside rpmbuild`__, which
 they use to implement the two-system-wide-directories
 approach. This is conceptually the sort of hook envisioned
-by bpo-43976, except implemented as a code patch to
+by bpo-43976_, except implemented as a code patch to
 ``distutils`` instead of as a changed ``sysconfig`` scheme.
 
 .. __: https://src.fedoraproject.org/rpms/python3.9/blob/f34/f/00251-change-user-install-location.patch
@@ -1171,17 +1175,51 @@ don't need to be added yet.
 References
 ==========
 
-https://fedoraproject.org/wiki/Changes/Making_sudo_pip_safe
+For additional background on these problems and previous
+attempts to solve them, see `Debian bug 771794`_ "pip
+silently removes/updates system provided python packages`
+from 2014, Fedora's 2018 article `Making sudo pip safe`_
+about pointing ``sudo pip`` at /usr/local (which
+acknowledges that the changes still do not make ``sudo pip``
+completely safe), pip issues 5605_ ("Disable upgrades to
+existing python modules which were not installed via pip")
+and 5722_ ("pip should respect /usr/local") from 2018, and
+the post-PyCon US 2019 discussion thread `Playing nice with
+external package managers`_.
 
-We can open these before the PEP is accepted and should link to these:
+.. _`Debian bug 771794`: https://bugs.debian.org/771794
 
-PR to pip for EXTERNALLY-MANAGED + ``--break-system-packages``
+.. _`Making sudo pip safe`: https://fedoraproject.org/wiki/Changes/Making_sudo_pip_safe
 
-PR to pip for hands-off-system-packages.patch v2
+.. _5605: https://github.com/pypa/pip/issues/5605
 
-MR to Debian Python to create the EXTERNALLY-MANAGED file
+.. _5722: https://github.com/pypa/pip/issues/5722
 
-PR to upstream Python for ``is_virtual_env``/``is_externally_managed`` maybe?
+.. _`Playing nice with external package managers`: https://discuss.python.org/t/playing-nice-with-external-package-managers/1968
+
+TODO: We can open these before the PEP is accepted and should link to these:
+
+* PR to pip for EXTERNALLY-MANAGED + ``--break-system-packages``
+
+* PR to pip for hands-off-system-packages.patch v2
+
+* MR to Debian Python to create the EXTERNALLY-MANAGED file
+
+* PR to upstream Python for ``is_virtual_env``/``is_externally_managed`` maybe?
+
+.. [#PEP-376] PEP 376, Database of Installed Python Distributions Ziadé
+   (http://www.python.org/dev/peps/pep-0376)
+
+.. [#PEP-427] PEP 427, The Wheel Binary Package Format 1.0, Holth
+   (http://www.python.org/dev/peps/pep-0427)
+
+.. [#pip] https://pip.pypa.io/en/stable/
+
+.. [#easy-install] https://setuptools.readthedocs.io/en/latest/deprecated/easy_install.html
+   (Note that the ``easy_install`` command was removed in
+   setuptools version 52, released 23 January 2021.)
+
+.. [#Conda] https://conda.io
 
 Copyright
 =========
