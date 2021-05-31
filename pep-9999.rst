@@ -591,7 +591,18 @@ checks by default:
    identified by ``sysconfig.get_path("stdlib",
    sysconfig.get_default_scheme())``
 
-If both of these conditions are true, the installer should
+3. Will it use data from a ``sysconfig`` scheme to determine
+   how to perform the installation? (For instance, regular
+   ``pip install`` does, but ``pip install
+   --target=/some/path`` does not.)
+
+4. If the ``EXTERNALLY-MANAGED`` file parses (see below) and
+   contains a ``Permitted-Schemes`` header, is the scheme
+   being used *not* a permitted scheme? (If it does not
+   parse or does not contain such a header, then the answer
+   to this check is "yes".)
+
+If all of these conditions are true, the installer should
 exit with an error message indicating that package
 installation into this Python interpreter's directory are
 disabled outside of a virtual environment.
@@ -667,6 +678,24 @@ translations can be provided in the same file:
     Error-de_DE=Wenn ist das Nunstück git und Slotermeyer?
 
      Ja! Beiherhund das Oder die Virtualenvironment gersput!
+
+The ``[externally-managed]`` section can also optionally
+contain a header ``Permitted-Schemes``, which is a
+comma-separated list of names of ``sysconfig`` schemes (with
+whitespace removed) for which the prohibition on global
+installation does not apply. The intended purpose is that
+distributions can create a non-default scheme for
+themselves, so they can use a standard Python installer as
+part of their own packaging. For instance, Debian already
+defines the ``deb_system`` scheme for this purpose, so it
+would set
+
+::
+
+    Permitted-Schemes=deb_system
+
+to allow its own packaging helpers to run without needing an
+additional override.
 
 In certain contexts, such as single-application container
 images that aren't updated after creation, a distributor may
@@ -827,22 +856,19 @@ pip to remove packages from the system-managed directory,
 which addresses the (hopefully theoretical) regression in
 use case 5 in Rationale_.
 
-To install packages with pip, you would also need to either
-suppress the ``EXTERNALLY-MANAGED`` marker file to allow pip
-to run or to override it on the command line.  You may want
-to use the same means for suppressing the marker file in
-build chroots as you do in container images.
+If you list your new scheme in ``Permitted-Schemes`` in the
+``EXTERNALLY-MANAGED`` file, then you won't need to go out
+of your way to override or suppress that file for
+distribution installs.
 
-The advantage of setting these up to be automatic
-(suppressing the marker file in your build environment and
-having ``get_preferred_schemes`` automatically return your
-distribution's scheme) is that an unadorned ``pip install``
-will work inside a package build, which generally means that
-an unmodified upstream build script that happens to
-internally call ``pip install`` will do the right thing.
-You can, of course, just ensure that your packaging process
-always calls ``pip install --scheme=posix_distro
---break-system-packages``, which would work too.
+The advantage of setting up ``sysconfig`` to automatically
+return the distribution's scheme inside your build
+environment is that an unadorned ``pip install`` will work
+inside a package build, which generally means that an
+unmodified upstream build script that happens to internally
+call ``pip install`` will do the right thing.  You can, of
+course, just ensure that your packaging process always calls
+``pip install --scheme=posix_distro``, which would work too.
 
 The best approach here depends a lot on your distribution's
 conventions and mechanisms for packaging.
