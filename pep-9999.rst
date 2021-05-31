@@ -1224,7 +1224,7 @@ TODO: We can open these before the PEP is accepted and should link to these:
 
 * PR to upstream Python for ``is_virtual_env``/``is_externally_managed`` maybe?
 
-.. [#PEP-376] PEP 376, Database of Installed Python Distributions Ziadé
+.. [#PEP-376] PEP 376, Database of Installed Python Distributions, Ziadé
    (http://www.python.org/dev/peps/pep-0376)
 
 .. [#PEP-427] PEP 427, The Wheel Binary Package Format 1.0, Holth
