@@ -587,7 +587,7 @@ checks by default:
    determine this by whether ``sys.prefix ==
    sys.base_prefix`` (but see `Backwards Compatibility`_).
 
-2. Is there a ``EXTERNALLY-MANAGED`` file in the directory
+2. Is there an ``EXTERNALLY-MANAGED`` file in the directory
    identified by ``sysconfig.get_path("stdlib",
    sysconfig.get_default_scheme())``
 
@@ -602,26 +602,29 @@ these rules, such as a command-line flag
 enabled by default and should carry some connotation that
 its use is risky.
 
-The ``EXTERNALLY-MANAGED`` file is a metadata file in the
-`packaging core metadata format`_, which is an
-email-message-like format with headers and a body.  (At
-current writing, that format is defined exactly as what the
-standard library ``email.parser`` module can parse using
-``policy=email.policy.compat32``.) If the file can be parsed
-as a core metadata file, then the installer should output an
-error message from that file as part of its error. If
-``locale.getlocale(locale.LC_MESSAGES)`` returns
-non-``None`` and the first element is a string of the form
-``xx_YY``, and the file contains a header variable
-``Error-xx_YY`` or failing that ``Error-xx``, then the
-installer should use the value of that header as the error.
-Otherwise, it should use the body of the message as an
-error.
+The ``EXTERNALLY-MANAGED`` file is an INI-style metadata
+file intended to be parsable by the standard library
+configparser_ module. If the file can be parsed by
+``configparser.ConfigParser(interpolation=None)``,
+and it contains a section ``[externally-managed]``, then the
+installer should look for an error message specified in the
+file and output it as part of its error. If the first
+element of the tuple returned by
+``locale.getlocale(locale.LC_MESSAGES)``, i.e., the language
+code, is not ``None``, it should look for the error message
+as the value of a key named ``Error-`` followed by the
+language code. If that key does not exist, and if the
+language code contains underscore or hyphen, it should look
+for a key named ``Error-`` followed by the portion of the
+language code before the underscore or hyphen. If it cannot
+find either of those, or if the language code is ``None``,
+it should look for a key simply named ``Error``.
 
-.. _`packaging core metadata format`: https://packaging.python.org/specifications/core-metadata/
+.. _configparser: https://docs.python.org/3/library/configparser.html
 
-If the file does not parse as a core metadata file, then the
-installer should ignore the parse failure and instead just
+If the installer cannot find an error message in the file
+(either because the file cannot be parsed or because no
+suitable error key exists), then the installer should just
 use a pre-defined error message of its own, which should
 suggest that the user create a virtual environment to
 install packages.
@@ -636,26 +639,34 @@ something like
 
 ::
 
-    To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
+    [externally-managed]
+    Error=To install Python packages system-wide, try apt install
+     python3-xyz, where xyz is the package you are trying to
+     install.
 
-    If you wish to install a non-Debian-packaged Python
-    package, create a virtual environment using python3 -m
-    venv path/to/venv. Then use path/to/venv/bin/python and
-    path/to/venv/bin/pip. Make sure you have python3-full
-    installed.
+     If you wish to install a non-Debian-packaged Python
+     package, create a virtual environment using python3 -m
+     venv path/to/venv. Then use path/to/venv/bin/python and
+     path/to/venv/bin/pip. Make sure you have python3-full
+     installed.
 
-    If you wish to install a non-Debian packaged Python
-    application, it may be easiest to use pipx install xyz,
-    which will manage a virtual environment for you. Make
-    sure you have pipx installed.
+     If you wish to install a non-Debian packaged Python
+     application, it may be easiest to use pipx install xyz,
+     which will manage a virtual environment for you. Make
+     sure you have pipx installed.
 
-    See /usr/share/doc/python3.9/README.venv for more
-    information.
+     See /usr/share/doc/python3.9/README.venv for more
+     information.
 
 which provides useful and distribution-relevant information
-to a user trying to install a package.
+to a user trying to install a package. Optionally,
+translations can be provided in the same file:
+
+::
+
+    Error-de_DE=Wenn ist das Nunstück git und Slotermeyer?
+
+     Ja! Beiherhund das Oder die Virtualenvironment gersput!
 
 In certain contexts, such as single-application container
 images that aren't updated after creation, a distributor may
@@ -992,11 +1003,17 @@ this isn't a blocker - distributions need only write the
 file, not read it, so they don't need a TOML library (the
 file will probably be written by hand, regardless of
 format), and packaging tools likely have a TOML reader
-already. However, the ``email.message`` format is currently
-used for various other forms of packaging metadata, meets
-our needs, and is parseable by the standard library, and the
-pip maintainers expressed a preference to avoid using TOML
-for this yet.
+already. However, the INI format is currently used for
+various other forms of packaging metadata (e.g.,
+``pydistutils.cfg`` and ``setup.cfg``), meets our needs, and
+is parsable by the standard library, and the pip maintainers
+expressed a preference to avoid using TOML for this yet.
+
+Should the file be ``email.message``-style? While this
+format is also used for packaging metadata (e.g. sdist and
+wheel metadata) and is also parsable by the standard
+library, it doesn't handle multi-line entries quite as
+clearly, and that is our primary use case.
 
 Should the marker file be executable Python code that
 evaluates whether installation should be allowed or not?
