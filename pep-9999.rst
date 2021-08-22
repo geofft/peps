@@ -54,7 +54,7 @@ A few terms used in this PEP have multiple meanings in the
 contexts that it spans. For clarity, this PEP uses the
 following terms in specific ways:
 
-distribution
+distro (distribution)
     A collection of various sorts of software, ideally
     designed to work properly together, including (in
     contexts relevant to this document) the Python
@@ -63,7 +63,7 @@ distribution
     "distribution" in the sense of "Linux distro" or
     "Berkeley Software Distribution."
 
-    A distribution can be an operating system (OS) of its
+    A distro (distribution) can be an operating system (OS) of its
     own, such as Debian, Fedora, or FreeBSD. It can also be
     an overlay distribution that installs on top of an
     existing OS, such as Homebrew or MacPorts.
@@ -87,15 +87,15 @@ package
 
     This document does not use "package" in the sense of an
     importable name that contains Python modules, though in
-    many cases, a distribution package consists of a single
+    many cases, a distro package consists of a single
     importable package of the same name.
 
     This document generally does not use the term "package"
-    to refer to units of installation by a distribution's
+    to refer to units of installation by a distro's
     package manager (such as ``.deb`` or ``.rpm`` files).
-    When needed, it uses phrasing such as "a distribution's
+    When needed, it uses phrasing such as "a distro's
     package." (Again, in many cases, a Python package is
-    shipped inside a distribution's package named something
+    shipped inside a distro's package named something
     like ``python-`` plus the Python package name.)
 Python-specific package manager
     A tool for installing, upgrading, and/or removing Python
@@ -108,29 +108,29 @@ Python-specific package manager
 
     (Conda [#conda]_ is a bit of a special case, as the
     ``conda`` command can install much more than just Python
-    packages, making it more like a distribution package
+    packages, making it more like a distro package
     manager in some senses. Since the ``conda`` command
     generally only operates on Conda-created environments,
     most of the concerns in this document do not apply to
     ``conda`` when acting as a Python-specific package
     manager.)
-distribution package manager
+distro package manager
     A tool for installing, upgrading, and/or removing a
-    distribution's packages in an installed instance of that
-    distribution, which is capable of installing Python
+    distro's packages in an installed instance of that
+    distro, which is capable of installing Python
     packages as well as non-Python packages, and therefore
     generally has its own database of installed software
     unrelated to PEP 376 [#PEP-376]. Examples include ``apt``,
     ``dpkg``, ``dnf``, ``rpm``, ``pacman``, and ``brew``.
     The salient feature is that if a package was installed
-    by a distribution package manager, removing or upgrading
+    by a distro package manager, removing or upgrading
     it in a way that would satisfy a Python-specific package
-    manager will generally leave a distribution package
+    manager will generally leave a distro package
     manager in an inconsistent state.
 
     This document also uses phrases like "external package
     manager" or "system's package manager" to refer to a
-    distribution package manager in certain contexts.
+    distro package manager in certain contexts.
 shadow
     To shadow an installed Python package is to cause some
     other package to be preferred for imports without
@@ -145,35 +145,35 @@ Motivation
 ==========
 
 Thanks to Python's immense popularity, software
-distributions (by which we mean Linux and other OS
+distros (by which we mean Linux and other OS
 distributions as well as overlay distributions like Homebrew
 and MacPorts) generally ship Python for two purposes: as a
 software package to be used in its own right by end users,
 and as a language dependency for other software in the
-distribution.
+distro.
 
 For example, Fedora and Debian (and their downstream
-distributions, as well as many others) ship a
+distros, as well as many others) ship a
 ``/usr/bin/python3`` binary which provides the ``python3``
 command available to end users as well as the
 ``#!/usr/bin/python3`` shebang for Python-language software
-included in the distribution. Because there are no official
+included in the distro. Because there are no official
 binary releases of Python for Linux/UNIX, almost all Python
 end users on these OSes use the Python interpreter built and
-shipped with their distribution.
+shipped with their distro.
 
-The ``python3`` executable available to the users of the distribution
+The ``python3`` executable available to the users of the distro
 and the ``python3`` executable available as a dependency for other
-software in the distribution are typically the same binary. This means that if an
+software in the distro are typically the same binary. This means that if an
 end user installs a Python package using a tool like ``pip``
 outside the context of a virtual environment, that
 package is visible to Python-language software shipped by
-the distribution. If the newly-installed package (or one of its
+the distro. If the newly-installed package (or one of its
 dependencies) is a newer, backwards-incompatible version of
-a package that was installed through the distribution, it
-may break software shipped by the distribution.
+a package that was installed through the distro, it
+may break software shipped by the distro.
 
-This may pose a critical problem for the integrity of distributions,
+This may pose a critical problem for the integrity of distros,
 which often have package-management tools that are
 themselves written in Python. For example, it's possible to
 unintentionally break Fedora's ``dnf`` command with a ``pip
@@ -196,7 +196,7 @@ remaining on the system.
 
 Over the past many years, a consensus has emerged that the
 best way to install Python libraries or applications (when
-not using a distribution's package) is to use a virtual
+not using a distro's package) is to use a virtual
 environment. This approach was popularized by the PyPA
 `virtualenv`_ project, and a simple version of that approach
 is now available in the Python standard library as ``venv``.
@@ -207,12 +207,12 @@ interpreter and prevents breaking system software.
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
 
 In some cases, however, it's useful and intentional to
-install a Python package from outside of the distribution
+install a Python package from outside of the distro
 that influences the behavior of distribution-shipped
 commands. This is common in the case of software like Sphinx
 or Ansible which have a mechanism for writing
 Python-language extensions. A user may want to use their
-distribution's version of the base software (for reasons of
+distro's version of the base software (for reasons of
 paid support or security updates) but install a small
 extension from PyPI, and they'd want that extension to be
 importable by the software in their base system.
@@ -241,7 +241,7 @@ an alternative.
 This is an opt-in mechanism: by default, the Python
 interpreter compiled from upstream sources will not be so
 marked, and so running ``pip install`` with a self-compiled
-interpreter, or with a distribution that has not explicitly
+interpreter, or with a distro that has not explicitly
 marked its interpreter, will work as it always has worked.
 
 Second, it sets the rule that when installing packages to an
@@ -263,7 +263,7 @@ As described in detail in the next section, the first
 behavior change involves creating a marker file named
 ``EXTERNALLY-MANAGED``, whose presence indicates that
 non-virtual-environment package installations are managed by
-some means external to Python, such as a distribution's
+some means external to Python, such as a distro's
 package manager. This file is specified
 to live in the ``stdlib`` directory in the default
 ``sysconfig`` scheme, which marks the interpreter /
@@ -281,7 +281,7 @@ clearly apply to the second case. The `Alternatives`_
 section has further discussion of possible locations.
 
 The second behavior change takes advantage of the existing
-``sysconfig`` setup in distributions that have already
+``sysconfig`` setup in distros that have already
 encountered this class of problem, and specifically
 addresses the problem of a Python-specific package manager
 deleting or overwriting files that are owned by an external
@@ -303,7 +303,7 @@ PEP:
 
 2. If you do run such a tool, should it be willing to delete
    packages shipped by the external (non-Python-specific)
-   package manager for that context, such as a distribution
+   package manager for that context, such as a distro
    package manager?
 
 (For simplicity, this section discusses pip as the
@@ -318,22 +318,22 @@ below:
 Case Description                       ``pip install`` permitted   Deleting externally-installed packages permitted
 ==== ================================= =========================== ===================================================
 1    Unpatched CPython                 Currently yes; stays yes    Currently yes; stays yes
-2    Distribution ``/usr/bin/python3`` Currently yes; becomes no   Currently yes (except on Debian); becomes no
+2    Distro ``/usr/bin/python3``       Currently yes; becomes no   Currently yes (except on Debian); becomes no
                                        (assuming the distribution
                                        adds a marker file)
-3    Distribution Python in venv       Currently yes; stays yes    There are no externally-installed packages
-4    Distribution Python in venv       Currently yes; stays yes    Currently no; stays no
+3    Distro Python in venv             Currently yes; stays yes    There are no externally-installed packages
+4    Distro Python in venv             Currently yes; stays yes    Currently no; stays no
      with ``--system-site-packages``
-5    Distribution Python in Docker     Currently yes; stays yes    Currently yes; becomes no
+5    Distro Python in Docker           Currently yes; stays yes    Currently yes; becomes no
                                        (assuming the Docker image
                                        removes the marker file)
 6    Conda environment                 Currently yes; stays yes    Currently yes; stays yes
 7    Dev-facing distribution           Currently yes; becomes no   Currently often yes; becomes no
                                        (assuming they add a        (assuming they configure ``sysconfig`` as needed)
                                        marker file)
-8    Distribution building packages    Currently yes; can stay yes Currently yes; becomes no
+8    Distro building packages          Currently yes; can stay yes Currently yes; becomes no
 9    ``PYTHONHOME`` copied from        Currently yes; becomes no   Currently yes; becomes no
-     a distribution Python stdlib
+     a distro Python stdlib
 10   ``PYTHONHOME`` copied from        Currently yes; stays yes    Currently yes; stays yes
      upstream Python stdlib
 ==== ================================= =========================== ===================================================
@@ -346,11 +346,11 @@ In more detail, the use cases above are:
 
    Such a CPython should (regardless of this PEP) not be
    installed in a way that that overlaps any
-   distribution-installed Python on the same system. For
+   distro-installed Python on the same system. For
    instance, on an OS that ships Python in ``/usr/bin``, you
    should not install a custom CPython built with
    ``./configure --prefix=/usr``, or it will overwrite some
-   files from the distribution and the distribution will
+   files from the distro and the distro will
    eventually overwrite some files from your installation.
    Instead, your installation should be in a separate
    directory (perhaps ``/usr/local``, ``/opt``, or your home
@@ -358,7 +358,7 @@ In more detail, the use cases above are:
 
    Therefore, we can assume that such a CPython has its own
    ``stdlib`` directory and its own ``sysconfig`` schemes
-   that do not overlap any distribution-installed Python. So
+   that do not overlap any distro-installed Python. So
    any OS-installed packages are not visible or relevant
    here.
 
@@ -370,24 +370,24 @@ In more detail, the use cases above are:
    current behavior, and ``pip install`` can remove any
    packages available in this CPython.
 
-2. A distribution's ``/usr/bin/python3``, either when
+2. A distro's ``/usr/bin/python3``, either when
    running ``pip install`` as root or ``pip install
    --user``, following our `Recommendations for
    distributions`_.
 
    These recommendations include shipping a marker file in
    the ``stdlib`` directory, to prevent ``pip install`` by
-   default, and placing distribution-shipped packages in a
+   default, and placing distro-shipped packages in a
    location other than the default ``sysconfig`` scheme, so
    that ``pip`` as root does not write to that location.
 
-   Many distributions (including Debian, Fedora, and their
+   Many distros (including Debian, Fedora, and their
    derivatives) are already doing the latter.
 
    On Debian and derivatives, ``pip install`` does not
-   currently delete distribution-installed packages, because
+   currently delete distro-installed packages, because
    Debian carries a `patch to pip to prevent this`__. So,
-   for those distributions, this PEP is not a behavior
+   for those distros, this PEP is not a behavior
    change; it simply standardizes that behavior in a way
    that is no longer Debian-specific and can be included
    into upstream pip.
@@ -402,7 +402,7 @@ In more detail, the use cases above are:
    standardizing this behavior in upstream package
    installers would address this problem.)
 
-3. A distribution Python when used inside a virtual
+3. A distro Python when used inside a virtual
    environment (either from ``venv`` or ``virtualenv``).
 
    Inside a virtual environment, all packages are owned by
@@ -411,7 +411,7 @@ In more detail, the use cases above are:
    should be managed by tools specific to that environment;
    they are not system-managed.
 
-4. A distribution Python when used inside a virtual
+4. A distro Python when used inside a virtual
    environment with ``--system-site-packages``. This is like
    the previous case, but worth calling out explicitly,
    because anything on the global ``sys.path`` is visible.
@@ -425,7 +425,7 @@ In more detail, the use cases above are:
    ``sysconfig`` schemes used for package management in the
    environment.
 
-5. A distribution Python when used in a single-application
+5. A distro Python when used in a single-application
    container image (e.g., a Docker container). In this use
    case, the risk of breaking system software is lower,
    since generally only a single application runs in the
@@ -444,7 +444,7 @@ In more detail, the use cases above are:
    override this. However, since the base image is generally
    minimal, there shouldn't be much of a use case for simply
    uninstalling packages (especially without using the
-   distribution's own tools). The common case is when pip
+   distro's own tools). The common case is when pip
    wants to upgrade a package, which previously would have
    deleted the old version (except on Debian). After this
    change, the old version will still be on disk, but pip
@@ -454,26 +454,26 @@ In more detail, the use cases above are:
    statement will still get you the newly-installed package.
 
    If it becomes necessary to have a way to do this, we
-   suggest that the distribution should document a way for
+   suggest that the distro should document a way for
    the installer tool to access the ``sysconfig`` scheme
-   used by the distribution itself.  See the
+   used by the distro itself.  See the
    `Recommendations for distributions`_ section for more
    discussion.
 
    It is the view of the authors of this PEP that it's still
    a good idea to use virtual environments with
-   distribution-installed Python interpreters, even in
+   distro-installed Python interpreters, even in
    single-application container images. Even though they run
    a single *application*, that application may run commands
    from the OS that are implemented in Python, and if you've
-   installed or upgraded the distribution-shipped Python
+   installed or upgraded the distro-shipped Python
    packages using Python-specific tools, those commands may
    break.
 
 6. Conda specifically supports the use of non-``conda``
    tools like pip to install software not available in the
    Conda repositories. In this context, Conda acts as the
-   external package manager / distribution and pip as the
+   external package manager / distro and pip as the
    Python-specific one.
 
    In some sense, this is similar to the first case, since
@@ -486,29 +486,29 @@ In more detail, the use cases above are:
    inside Conda environments. (That said, it may be worth
    considering whether to use separate ``sysconfig`` schemes
    for pip-installed and Conda-installed software, for the
-   same reasons it's a good idea for other distributions.)
+   same reasons it's a good idea for other distros.)
 
-7. By a "developer-facing distribution," we mean a specific
+7. By a "developer-facing distro," we mean a specific
    type of distribution where direct users of Python or
-   other languages in the distribution are expected or
-   encouraged to make changes to the distribution itself if
+   other languages in the distro are expected or
+   encouraged to make changes to the distro itself if
    they wish to add libraries. Common examples include
    private "monorepos" at software development companies,
    where a single repository builds both third-party and
    in-house software, and the direct users of the
-   distribution's Python interpreter are generally software
+   distro's Python interpreter are generally software
    developers writing said in-house software. User-level
    package managers like Nixpkgs_ may also count,
    because they encourage users of Nix who are Python
    developers to `package their software for Nix`__.
 
-   In these cases, the distribution may want to respond to
+   In these cases, the distro may want to respond to
    an attempted ``pip install`` with guidance encouraging
-   use of the distribution's own facilities for adding new
+   use of the distro's own facilities for adding new
    packages, along with a link to documentation.
 
    If the distribution supports/encourages creating a
-   virtual environment from the distribution's Python
+   virtual environment from the distro's Python
    interpreter, there may also be custom instructions for
    how to properly set up a virtual environment (as for
    example Nixpkgs does).
@@ -517,12 +517,12 @@ In more detail, the use cases above are:
 
    .. __: https://nixos.wiki/wiki/Python
 
-8. When building distribution Python packages for a
-   distribution Python (case 2), it may be useful to have
-   ``pip install`` be usable as part of the distribution's
+8. When building distro Python packages for a
+   distro Python (case 2), it may be useful to have
+   ``pip install`` be usable as part of the distro's
    package build process. (Consider, for instance, building a
    ``python-xyz`` RPM by using ``pip install .`` inside an
-   sdist / source tarball for ``xyz``.) The distribution may
+   sdist / source tarball for ``xyz``.) The distro may
    also want to use a more targeted but still
    Python-specific installation tool such as installer_.
 
@@ -531,7 +531,7 @@ In more detail, the use cases above are:
    For this case, the build process will need to find some
    way to suppress the marker file to allow ``pip install``
    to work, and will probably need to point the
-   Python-specific tool at the distribution's ``sysconfig``
+   Python-specific tool at the distro's ``sysconfig``
    scheme instead of the shipped default. See the
    `Recommendations for distributions`_ section for more
    discussion on how to implement this.
@@ -543,14 +543,14 @@ In more detail, the use cases above are:
    delete some other files on the system; it can only
    package up its own files.
 
-9. A distribution Python used with ``PYTHONHOME`` to set up
+9. A distro Python used with ``PYTHONHOME`` to set up
    an alternative Python environment (as opposed to a
    virtual environment), where ``PYTHONHOME`` is set to some
-   directory copied directly from the distribution Python
+   directory copied directly from the distro Python
    (e.g., ``cp -a /usr/lib/python3.x pyhome/lib``).
 
    Assuming there are no modifications, then the behavior is
-   just like the underlying distribution Python (case 2).
+   just like the underlying distro Python (case 2).
    So there are behavior changes - you can no longer ``pip
    install`` by default, and if you override it, it will no
    longer delete externally-installed packages (i.e.,
@@ -559,10 +559,10 @@ In more detail, the use cases above are:
 
    This behavior change seems to be defensible, in that if
    your ``PYTHONHOME`` is a straight copy of the
-   distribution's Python, it should behave like the
-   distribution's Python.
+   distro's Python, it should behave like the
+   distro's Python.
 
-10. A distribution Python (or any Python interpreter) used
+10. A distro Python (or any Python interpreter) used
     with a ``PYTHONHOME`` taken from a compatible unmodified
     upstream Python.
 
@@ -658,7 +658,7 @@ something like
      See /usr/share/doc/python3.9/README.venv for more
      information.
 
-which provides useful and distribution-relevant information
+which provides useful and distro-relevant information
 to a user trying to install a package. Optionally,
 translations can be provided in the same file:
 
@@ -704,22 +704,22 @@ Recommendations for distributions
 =================================
 
 This section is non-normative. It provides best practices we
-believe distributions should follow unless they have a
+believe distros should follow unless they have a
 specific reason otherwise.
 
 Mark the installation as externally managed
 -------------------------------------------
 
-Distributions should create an ``EXTERNALLY-MANAGED`` file
+Distros should create an ``EXTERNALLY-MANAGED`` file
 in their ``stdlib`` directory.
 
 Guide users towards virtual environments
 ----------------------------------------
 
-The file should contain a useful and distribution-relevant
+The file should contain a useful and distro-relevant
 error message indicating both how to install system-wide
-packages via the distribution's package manager and how to
-set up a virtual environment. If your distribution is often
+packages via the distro's package manager and how to
+set up a virtual environment. If your distro is often
 used by users in a state where the ``python3`` command is
 available (and especially where ``pip`` or ``get-pip`` is
 available) but ``python3 -m venv`` does not work, the
@@ -731,12 +731,12 @@ Python-language applications, and suggesting it in the
 error. pipx automatically creates a virtual environment for
 that application alone, which is a much better default for
 end users who want to install some Python-language software
-(which isn't available in the distribution) but are not
-themselves Python users. Packaging pipx in the distribution
+(which isn't available in the distro) but are not
+themselves Python users. Packaging pipx in the distro
 avoids the irony of instructing users to ``pip install
 --user --break-system-packages pipx`` to *avoid* breaking
 system packages. Consider arranging things so your
-distribution's package / environment for Python for end
+distro's package / environment for Python for end
 users (e.g., ``python3`` on Fedora or ``python3-full`` on
 Debian) depends on pipx.
 
@@ -745,7 +745,7 @@ Debian) depends on pipx.
 Remove the marker file in container images
 ------------------------------------------
 
-Distributions that produce official images for
+Distros that produce official images for
 single-application containers (e.g., Docker container
 images) should remove the ``EXTERNALLY-MANAGED`` file,
 preferably in a way that makes it not come back if a user
@@ -760,21 +760,21 @@ post-install script to re-remove the
 Create separate distribution and local directories
 --------------------------------------------------
 
-Distributions should place two separate paths on the system
-interpreter's  ``sys.path``, one for distribution-installed
+Distros should place two separate paths on the system
+interpreter's  ``sys.path``, one for distro-installed
 packages and one for packages installed by the local system
 administrator, and configure
 ``sysconfig.get_default_scheme()`` to point at the latter
 path. This ensures that tools like pip will not modify
-distribution-installed packages. The path for the local
-system administrator should come before the distribution
+distro-installed packages. The path for the local
+system administrator should come before the distro
 path on ``sys.path`` so that local installs take preference
-over distribution packages.
+over distro packages.
 
 For example, Fedora and Debian (and their derivatives) both
 implement this split by using ``/usr/local`` for
 locally-installed packages and ``/usr`` for
-distribution-installed packages. Fedora uses
+distro-installed packages. Fedora uses
 ``/usr/local/lib/python3.x/site-packages`` vs.
 ``/usr/lib/python3.x/site-packages``. (Debian uses
 ``/usr/local/lib/python3/dist-packages`` vs.
@@ -785,11 +785,11 @@ you build and install upstream CPython in
 ``/usr/local/lib/python3/site-packages``, and Debian wishes
 to make sure that packages installed via the locally-built
 interpreter don't show up on ``sys.path`` for the
-distribution interpreter.)
+distro interpreter.)
 
 Note that the ``/usr/local`` vs. ``/usr`` split is analogous
 to how the ``PATH`` environment variable typically includes
-``/usr/local/bin:/usr/bin`` and non-distribution software
+``/usr/local/bin:/usr/bin`` and non-distro software
 installs to ``/usr/local`` by default. This split is
 `recommended by the Filesystem Hierarchy Standard`__.
 
@@ -810,7 +810,7 @@ make your packaging tool set an environment variable or some
 other detectable configuration, and define a
 ``get_preferred_schemes`` function to return a different
 scheme when called from inside a package build. Then you can
-use ``pip install`` as part of your distribution packaging.
+use ``pip install`` as part of your distro packaging.
 
 .. _bpo-43976: https://bugs.python.org/issue43976
 
@@ -820,7 +820,7 @@ Notes`_ below for how pip currently determines schemes.)
 Once that's available, for local testing and possibly for
 actual packaging, you would be able to run something like
 ``pip install --scheme=posix_distro`` to explicitly install
-a package into your distribution's location (bypassing
+a package into your distro's location (bypassing
 ``get_preferred_schemes``). One could also, if absolutely
 needed, use ``pip uninstall --scheme=posix_distro`` to use
 pip to remove packages from the system-managed directory,
@@ -836,7 +836,7 @@ build chroots as you do in container images.
 The advantage of setting these up to be automatic
 (suppressing the marker file in your build environment and
 having ``get_preferred_schemes`` automatically return your
-distribution's scheme) is that an unadorned ``pip install``
+distro's scheme) is that an unadorned ``pip install``
 will work inside a package build, which generally means that
 an unmodified upstream build script that happens to
 internally call ``pip install`` will do the right thing.
@@ -844,36 +844,36 @@ You can, of course, just ensure that your packaging process
 always calls ``pip install --scheme=posix_distro
 --break-system-packages``, which would work too.
 
-The best approach here depends a lot on your distribution's
+The best approach here depends a lot on your distro's
 conventions and mechanisms for packaging.
 
 Similarly, the ``sysconfig`` paths that are not for
 importable Python code - that is, ``include``,
 ``platinclude``, ``scripts``, and ``data`` - should also
-have two variants, one for use by distribution-packaged
+have two variants, one for use by distro-packaged
 software and one for use for locally-installed software, and
-the distribution should be set up such that both are usable.
-For instance, a typical FHS-compliant distribution will use
+the distro should be set up such that both are usable.
+For instance, a typical FHS-compliant distro will use
 ``/usr/local/include`` for the default scheme's ``include``
-and ``/usr/include`` for distribution-packaged headers and
+and ``/usr/include`` for distro-packaged headers and
 place both on the compiler's search path, and it will use
 ``/usr/local/bin`` for the default scheme's ``scripts`` and
-``/usr/bin`` for distribution-packaged entry points and
+``/usr/bin`` for distro-packaged entry points and
 place both on ``$PATH``.
 
 Backwards Compatibility
 =======================
 
-All of these mechanisms are proposed for new distribution
+All of these mechanisms are proposed for new distro
 releases and new versions of tools like pip only.
 
-In particular, we strongly recommend that distributions with
+In particular, we strongly recommend that distros with
 a concept of major versions only add the marker file or
 change ``sysconfig`` schemes in a new major version;
 otherwise there is a risk that, on an existing system,
 software installed via a Python-specific package manager now
 becomes unmanageable (without an override option). For a
-rolling-release distribution, if possible, only add the
+rolling-release distro, if possible, only add the
 marker file or change ``sysconfig`` schemes in a new Python
 minor version.
 
@@ -951,7 +951,7 @@ Should the marker file be in ``sys.path``, marking a
 particular directory as not to be written to by a Python-specific
 package manager? This would help with the second problem
 addressed by this PEP (not overwriting deleting
-distribution-owned files) but not the first (incompatible
+distro-owned files) but not the first (incompatible
 installs). A directory-specific marker in
 ``/usr/lib/python3.x/site-packages`` would not discourage
 installations into either
@@ -999,7 +999,7 @@ but that is outside the scope of this PEP.)
 Should the file be TOML? TOML is gaining popularity for
 packaging (see e.g. PEP-517) but does not yet have an
 implementation in the standard library. Strictly speaking,
-this isn't a blocker - distributions need only write the
+this isn't a blocker - distros need only write the
 file, not read it, so they don't need a TOML library (the
 file will probably be written by hand, regardless of
 format), and packaging tools likely have a TOML reader
@@ -1072,8 +1072,8 @@ the marker file can be easily removed).
 System Python
 -------------
 
-Shouldn't distribution software just run with the
-distribution ``site-packages`` directory alone on
+Shouldn't distro software just run with the
+distro ``site-packages`` directory alone on
 ``sys.path`` and ignore the local system administrator's
 ``site-packages`` as well as the user-specific one? This is
 a worthwhile idea, and various versions of it have been
@@ -1083,11 +1083,11 @@ users writing Python or installing Python software separate
 from the system). However, it's much more involved of a
 change. First, it would be a backwards-incompatible change.
 As mentioned in the Motivation_ section, there are valid use
-cases for running distribution-installed Python applications
+cases for running distro-installed Python applications
 like Sphinx or Ansible with locally-installed Python
 libraries available on their ``sys.path``. A wholesale
 switch to ignoring local packages would break these use
-cases, and a distribution would have to make a case-by-case
+cases, and a distro would have to make a case-by-case
 analysis of whether an application ought to see
 locally-installed libraries or not.
 
@@ -1095,7 +1095,7 @@ Furthermore, `Fedora attempted this change and reverted
 it`_, finding, ironically, that their implementation of the
 change `broke their package manager`_. Given that
 experience, there are clearly details to be worked out
-before distributions can reliably implement that approach,
+before distros can reliably implement that approach,
 and a PEP recommending it would be premature.
 
 .. _`Fedora attempted this change and reverted it`: https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/thread/SEFUWW4XZBTVOAQ36XOJQ72PIICMFOSN/
@@ -1104,7 +1104,7 @@ and a PEP recommending it would be premature.
 This PEP is intended to be a complete and self-contained
 change that is independent of a distributor's decision for
 or against "system Python" or similar proposals. It is not
-incompatible with a distribution implementing "system
+incompatible with a distro implementing "system
 Python" in the future, and even though both proposals
 address the same class of problems, there are still
 arguments in favor of implementing something like "system
@@ -1123,16 +1123,16 @@ with the downsides mentioned above.
 
 We expect that the guidance in this PEP - that users should
 use virtual environments whenever possible and that
-distributions should have separate ``sys.path`` directories
-for distribution-managed and locally-managed modules -
+distros should have separate ``sys.path`` directories
+for distro-managed and locally-managed modules -
 should make further experiments easier in the future. These
 may include distributing wholly separate "system" and "user"
 Python interpreters, running system software out of a
-distribution-owned virtual environment or ``PYTHONHOME``
+distro-owned virtual environment or ``PYTHONHOME``
 (but shipping a single interpreter), or modifying the entry
-points for certain software (such as the distribution's
+points for certain software (such as the distro's
 package manager) to use a ``sys.path`` that only sees
-distribution-managed directories. Those ideas themselves,
+distro-managed directories. Those ideas themselves,
 however, remain outside the scope of this PEP.
 
 Implementation Notes
@@ -1148,7 +1148,7 @@ looking up schemes when installing:
 ``pip install``
     Calls ``sysconfig.get_default_scheme()``, which is
     usually (in upstream CPython and most current
-    distributions) the same as
+    distros) the same as
     ``get_preferred_scheme('prefix')``.
 
 ``pip install --prefix=/some/path``
