@@ -607,7 +607,7 @@ its use is risky.
 The ``EXTERNALLY-MANAGED`` file is an INI-style metadata
 file intended to be parsable by the standard library
 configparser_ module. If the file can be parsed by
-``configparser.ConfigParser(interpolation=None)``,
+``configparser.ConfigParser(interpolation=None)`` using the UTF-8 encoding,
 and it contains a section ``[externally-managed]``, then the
 installer should look for an error message specified in the
 file and output it as part of its error. If the first
