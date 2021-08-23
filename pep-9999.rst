@@ -54,27 +54,29 @@ A few terms used in this PEP have multiple meanings in the
 contexts that it spans. For clarity, this PEP uses the
 following terms in specific ways:
 
-distro (distribution)
-    A collection of various sorts of software, ideally
-    designed to work properly together, including (in
-    contexts relevant to this document) the Python
-    interpreter itself, software written in Python, and
-    software written in other languages. That is, this is
-    "distribution" in the sense of "Linux distro" or
+distro
+    Short for "distribution," a collection of various sorts of software,
+    ideally designed to work properly together, including (in contexts
+    relevant to this document) the Python interpreter itself, software
+    written in Python, and software written in other languages. That is,
+    this is the sense used in phrases such as "Linux distro" or
     "Berkeley Software Distribution."
 
-    A distro (distribution) can be an operating system (OS) of its
+    A distro can be an operating system (OS) of its
     own, such as Debian, Fedora, or FreeBSD. It can also be
     an overlay distribution that installs on top of an
     existing OS, such as Homebrew or MacPorts.
 
-    To avoid confusion, this document does not use
-    "distribution" in the sense of a source or binary
-    distribution package of a single piece of Python
+    This document uses the short term "distro," because the term
+    "distribution" has another meaning in Python packaging contexts: a
+    source or binary distribution package of a single piece of Python
     language software, that is, in the sense of
-    ``setuptools.dist.Distribution`` or "sdist".
+    ``setuptools.dist.Distribution`` or "sdist".  To avoid confusion,
+    this document does not use the plain term "distribution" at all. In
+    the Python packaging sense, it uses the full phrase "distribution
+    package" or just "package" (see below).
 
-    The provider of a distribution - the team or company
+    The provider of a distro - the team or company
     that collects and publishes the software and makes any
     needed modifications - is its **distributor**.
 package
@@ -87,7 +89,7 @@ package
 
     This document does not use "package" in the sense of an
     importable name that contains Python modules, though in
-    many cases, a distro package consists of a single
+    many cases, a distribution package consists of a single
     importable package of the same name.
 
     This document generally does not use the term "package"
@@ -146,7 +148,7 @@ Motivation
 
 Thanks to Python's immense popularity, software
 distros (by which we mean Linux and other OS
-distributions as well as overlay distributions like Homebrew
+distros as well as overlay distros like Homebrew
 and MacPorts) generally ship Python for two purposes: as a
 software package to be used in its own right by end users,
 and as a language dependency for other software in the
@@ -208,7 +210,7 @@ interpreter and prevents breaking system software.
 
 In some cases, however, it's useful and intentional to
 install a Python package from outside of the distro
-that influences the behavior of distribution-shipped
+that influences the behavior of distro-shipped
 commands. This is common in the case of software like Sphinx
 or Ansible which have a mechanism for writing
 Python-language extensions. A user may want to use their
@@ -319,7 +321,7 @@ Case Description                       ``pip install`` permitted   Deleting exte
 ==== ================================= =========================== ===================================================
 1    Unpatched CPython                 Currently yes; stays yes    Currently yes; stays yes
 2    Distro ``/usr/bin/python3``       Currently yes; becomes no   Currently yes (except on Debian); becomes no
-                                       (assuming the distribution
+                                       (assuming the distro
                                        adds a marker file)
 3    Distro Python in venv             Currently yes; stays yes    There are no externally-installed packages
 4    Distro Python in venv             Currently yes; stays yes    Currently no; stays no
@@ -328,7 +330,7 @@ Case Description                       ``pip install`` permitted   Deleting exte
                                        (assuming the Docker image
                                        removes the marker file)
 6    Conda environment                 Currently yes; stays yes    Currently yes; stays yes
-7    Dev-facing distribution           Currently yes; becomes no   Currently often yes; becomes no
+7    Dev-facing distro                 Currently yes; becomes no   Currently often yes; becomes no
                                        (assuming they add a        (assuming they configure ``sysconfig`` as needed)
                                        marker file)
 8    Distro building packages          Currently yes; can stay yes Currently yes; becomes no
@@ -373,7 +375,7 @@ In more detail, the use cases above are:
 2. A distro's ``/usr/bin/python3``, either when
    running ``pip install`` as root or ``pip install
    --user``, following our `Recommendations for
-   distributions`_.
+   distros`_.
 
    These recommendations include shipping a marker file in
    the ``stdlib`` directory, to prevent ``pip install`` by
@@ -457,7 +459,7 @@ In more detail, the use cases above are:
    suggest that the distro should document a way for
    the installer tool to access the ``sysconfig`` scheme
    used by the distro itself.  See the
-   `Recommendations for distributions`_ section for more
+   `Recommendations for distros`_ section for more
    discussion.
 
    It is the view of the authors of this PEP that it's still
@@ -489,7 +491,7 @@ In more detail, the use cases above are:
    same reasons it's a good idea for other distros.)
 
 7. By a "developer-facing distro," we mean a specific
-   type of distribution where direct users of Python or
+   type of distro where direct users of Python or
    other languages in the distro are expected or
    encouraged to make changes to the distro itself if
    they wish to add libraries. Common examples include
@@ -507,7 +509,7 @@ In more detail, the use cases above are:
    use of the distro's own facilities for adding new
    packages, along with a link to documentation.
 
-   If the distribution supports/encourages creating a
+   If the distro supports/encourages creating a
    virtual environment from the distro's Python
    interpreter, there may also be custom instructions for
    how to properly set up a virtual environment (as for
@@ -533,7 +535,7 @@ In more detail, the use cases above are:
    to work, and will probably need to point the
    Python-specific tool at the distro's ``sysconfig``
    scheme instead of the shipped default. See the
-   `Recommendations for distributions`_ section for more
+   `Recommendations for distros`_ section for more
    discussion on how to implement this.
 
    As a result of this PEP, pip will no longer be able to
@@ -700,7 +702,7 @@ If the installer is installing to a location outside of a
 ``sysconfig`` scheme (e.g., ``pip install --target``), then
 this subsection does not apply.
 
-Recommendations for distributions
+Recommendations for distros
 =================================
 
 This section is non-normative. It provides best practices we
@@ -757,8 +759,8 @@ need to be some configuration flag available to a
 post-install script to re-remove the
 ``EXTERNALLY-MANAGED`` file.
 
-Create separate distribution and local directories
---------------------------------------------------
+Create separate distro and local directories
+--------------------------------------------
 
 Distros should place two separate paths on the system
 interpreter's  ``sys.path``, one for distro-installed
