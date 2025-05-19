@@ -189,11 +189,11 @@ Election of the council
 
 A council election consists of two phases:
 
-* Phase 1: A :ref:`voting member <voting-member>` can nominate any individual for the council
+* Phase 1: The :ref:`Packaging Electors <electors>` can nominate any individual for the council
   elections, including themselves.  Nominations must include information about the nominee's
-  relevant affiliations.  Nominees for the Packaging Council do not need to be voting members.
-* Phase 2: Each voting member can assign zero to five stars to each candidate.
-  Voting is performed anonymously. The outcome of the vote is determined using
+  relevant affiliations.  Nominees for the Packaging Council do not need to be part of the College of Packaging Electors.
+* Phase 2: Each Elector can assign zero to five stars to each candidate.
+  The outcome of the vote is determined using
   the `STAR voting system`_, modified to use the `Multi-winner Bloc STAR`_
   approach. If a tie occurs, it may be resolved by mutual agreement among the
   candidates, or else the winner will be chosen at random.
@@ -205,7 +205,9 @@ outgoing Packaging Council. For the initial election, the Returning Officer
 will be nominated by the PSF Executive Director.
 
 The PSF shall maintain records of the elections as well as run the annual
-election for the council.
+election for the council. The full results of the election, including the contents of each ballot cast, shall be public.
+
+Ballots are ordinarily kept anonymous to all (including the Returning Officer) but with sufficient information to de-anonymize them. Deanonymization requires a supermajority (two-thirds) vote of at least two of the Steering Council, the PSF Board, and the current Packaging Council. Deanonymization must only be done to investigate the possibility of coordinated/inauthentic activity in the College that does not, in the view of the bodies that vote to deanonymize, accurately represent the Python packaging community; the proposal must identify to whom ballot identities are revealed (which cannot be the general public) and would be expected to be followed with a proposal to change this PEP to reconstitute the College differently. ("Anonymous" shall be deemed to include software that can show identities to the Returning Officer or their designees in response to explicit user action, provided it does not show it by default.)
 
 Term
 ----
@@ -248,15 +250,15 @@ Conflicts of interest
 No more than two Packaging Council members should be employed by or
 significantly affiliated with the same entity. An entity is a company, a
 company and its subsidiaries, or another incorporated entity such as a
-non-profit or educational institution with its own mission and goals. PSF
-members are explicitly exempt from this restriction, but *not* PSF directors
-or officers.
+non-profit or educational institution with its own mission and goals.
+Significant affiliation includes, at the least, receiving wages for current work, officer/director roles, and 25% or more ownership stake.
 
-While we trust council members to act in the best interests of Python rather
+While we expect and trust council members to act in the best interests of Python rather
 than themselves or their employers, the mere appearance of any one company
 dominating Python development could itself be harmful and erode trust.
 
-PSF staff members are not permitted to be members of the Packaging Council.
+Neither PSF staff members nor Steering Council members are
+permitted to be members of the Packaging Council.
 
 In a council election, if more than two of the top five vote-getters work for
 the same employer, then whichever of them ranked lowest is disqualified and the
@@ -270,82 +272,83 @@ can then be filled as normal.
 
 .. _voting-member:
 
---------------
-Voting members
---------------
+---
+College of Packaging Electors
+---
 
-Responsibility
-==============
+The College of Packaging Electors is the group of members of the Python community, broadly defined, with an interest in packaging. The responsibility of the College is to elect members of the Packaging Council once a year. In extraordinary circumstances, the College can recall members of the Packaging Council.
 
-Voting members participate in formal votes to elect the Packaging Council.
+All Python community members with an interest in Python packaging, in any form, are invited to become an Elector.
 
 .. _process:
 
 Processes
 =========
 
-Initial membership
-------------------
+Becoming an Elector
+---
 
-Initial set of voting members will include anyone who has taken the time to
-formalise their participation in the packaging community. This includes:
+Electors must be voting members of the PSF, and any `PSF voting member` is eligible to be an Elector and can join the College via their PSF account dashboard (TODO). Invitations will be sent out one month before Packaging Council elections to all PSF members, but there is no minimum time period between becoming a PSF member and being eligible to vote with the College.
 
-* PyPA members: Anyone with the triage bit or commit bit, or at least one
-  project in the PyPA organisation.
-* Packaging workgroup members: Anyone who is listed on the Packaging WG charter
-  who is willing to participate is welcome.
-* Interested core team members: Any Python core team member who is willing to
-  participate is welcome.
-* Wider community members: An initial set of for-profit companies, nonprofit
-  organizations, academic or educational institutions and smaller unaffiliated
-  projects would be invited to nominate three individuals to represent them.
-  See :ref:`the initial set of community voting members <appendix_C>`.
+.. _PSF member: https://www.python.org/psf/membership/
 
-Adding a new member
+It is the intent of this PEP that **anyone who is interested in Python packaging in any public ecosystem and believes themselves to be a qualified voter** should be eligible to be an Elector. In particular, anyone can become a Contributing Member of the PSF by self-certifying:
+
+> You qualify as a Contributing Member if you dedicate at least five hours per month volunteering on projects which advance the mission of the PSF by creating or maintaining open source software available to the public at no charge, organizing Python events, participating in one of the PSF's working groups, etc.
+
+"Volunteering on projects" includes reporting bugs, participating in discussion forums, etc. Also,
+
+> The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers.
+
+Therefore, your volunteering can be on **any projects that promote and advance the Python programming language and facilitate the growth of the Python community**.
+
+We particularly encourage anyone who is active in maintaining or contributing to public packaging ecosystems other than the PyPA/PyPI/pip ecosystem, including alternative Python package managers as well as Python packaging for general-purpose package managers, to become a PSF member and an Elector.
+
+The list of Electors will be public.
+
+Responsibilities and expectations
+---
+
+Electors will get announcements of votes emailed to the address in their PSF account. These announcements are expected to be once a year with a couple of reminders, except in exceptional circumstances triggering additional votes.
+
+There are no other forums / communications channels that Electors are required or assumed to watch, but for coordination for exceptional circumstances, they are encouraged to use existing community forums like discuss.python.org.
+
+Quorum
+---
+
+Quorum for elections of Packaging Council members is 50% of all Electors who request a ballot for that election.
+
+
+Removal of Electors
 -------------------
-
-New voting members are added by a simple majority vote by the current
-membership. Quorum for adding new members is 50%.
-
-A vote to add a new member is triggered when a voting member calls for one
-publicly on an appropriate communication channel, and another voting member
-seconds the call within two weeks.
-
-The vote lasts for one week. Each member can vote for or against.
-
-Removal of a member
--------------------
-
-In order to maintain a reasonable expectation of quorum, failure to participate
-in Packaging Council elections for two consecutive council elections
-automatically removes a person from the list of voting members, until they
-re-submit their intention to resume their participation to the Packaging
-Council in writing.
 
 In exceptional circumstances, it may be necessary to remove someone from the
-voting members against their will (for example: egregious and ongoing code of
-conduct violations). A voting member may be removed by a two-thirds majority
+College against their will (for example: egregious and ongoing code of
+conduct violations). An Elector may be removed by a two-thirds majority
 vote by the Packaging Council (in practice: 4:1 for a council with five
 members).
 
-If the relevant voting member is also on the Packaging Council, then they can
+If the relevant Elector is also on the Packaging Council, then they can
 participate in the vote. They are removed from the Packaging Council if the
-vote removes them as a voting member. The vacancy is filled as per the process
+vote removes them as an Elector. The vacancy is filled as per the process
 for filling vacancies in the Packaging Council.
+
+In such a case, the former Elector may not rejoin unless approved by another two-thirds majority vote by the Packaging Council.
 
 Vote of no confidence
 ---------------------
 
-In exceptional circumstances, the voting members may remove a sitting council
+In exceptional circumstances, the College may remove a sitting council
 member, or the entire council, via a vote of no confidence.
 
-A no-confidence vote is triggered when a voting member calls for one publicly
-on an appropriate public communication channel, and another voting member
-seconds the call within one week.
+Electors are encouraged to use standard community forums like discuss.python.org to, first, attempt to resolve concerns (e.g. by a council member voluntarily stepping down) or to coordinate a vote of no confidence and ensure sufficient seconds.
 
-The vote lasts for two weeks. Each voting member votes for or against. If at
+A no-confidence vote is triggered when an Elector calls for one publicly
+on discuss.python.org. It must also be seconded within one week by a number of Electors equal to the square root of the total number of Electors (rounded down to the nearest whole number). Mechanically, a no-confidence vote and seconds can be raised on the PSF membership website.
+
+The vote lasts for two weeks. Each Elector may vote for or against. If at
 least two thirds of voters express a lack of confidence, then the vote
-succeeds. Quorum for a vote of no confidence is 50%.
+succeeds. Quorum for a vote of no confidence is 50% of all Electors.
 
 There are two forms of no-confidence votes: those targeting a single member,
 and those targeting the council as a whole. The initial call for a
@@ -354,13 +357,14 @@ succeeds, then that member is removed from the council and the resulting
 vacancy can be handled in the usual way. If a whole-council vote succeeds, the
 council is dissolved and a new council election is triggered immediately.
 
------------------------
-Changing the governance
------------------------
+If a no-confidence vote fails, another identical no-confidence vote (that is, of the same form, and against the same member for the first form) may not be raised for six months from the initial call.
 
-Changes to this governance model, once it is accepted, will require at least a
-two-thirds majority of votes cast in a vote, which should be open for two
-weeks.
+Changing this document
+---
+
+The Steering Council has authority to make changes to this document through the same process it uses to approve new PEPs, with the exception that the Council may not deanonymize previously-cast ballots except by the procedure in the PEP that applied when those ballots were cast.
+
+In particular, if it is found that the definition of the College is unsuitable, the Steering Council has the responsibility to accept a proposal for another definition.
 
 ==============
 Rejected Ideas
